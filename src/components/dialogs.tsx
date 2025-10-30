@@ -1,9 +1,7 @@
 import styled from "styled-components";
-import {StyledProps} from "../theme";
 
 export const DialogContainer = styled.div<{ width?: string, height?: string }>`
   position: relative;
-  background-color: ${({theme}: StyledProps) => theme.neutral};
   border-radius: 5px;
   overflow: hidden;
   box-shadow: 0 0.25em 0.5em rgba(0, 45, 98, .3);

@@ -1,54 +1,40 @@
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css'; // **Crucial: Import Leaflet's CSS**
+import { MapContainer, TileLayer, Marker, Polyline } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import {observer} from "mobx-react-lite";
 
-// --- Fix for Leaflet's Default Icon Issue with Webpack/CRA ---
-import L from 'leaflet';
+export interface Position {
+  lat: number;
+  lng: number;
+}
 
+interface MapPageProps {
+  center?: Position;
+  polylineCoordinates?: Position[];
+  markers?: Position[];
+  initialZoom?: number;
+}
 
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-});
-// -----------------------------------------------------------
+const MapPage = observer(({center, polylineCoordinates, markers, initialZoom}: MapPageProps) => {
 
-const center: [number, number] = [46.505, 15.09]; // Initial center [Lat, Lng]
-const markerPosition: [number, number] = [46.515, 15.01];
-
-// Array of coordinates for the polyline
-const polylineCoordinates: [number, number][] = [
-  [46.505, 15.1],
-  [46.509, 15.1],
-  [46.51, 15.08],
-];
-
-const MapPage: React.FC = () => {
   return (
       <MapContainer
-          center={center}
-          zoom={13}
-          scrollWheelZoom={false}
-          style={{ height: '400px', width: '100%' }}
+          center={center ?? [46.0569, 14.5058]}
+          zoom={initialZoom ?? 13}
+          scrollWheelZoom={true}
+          zoomControl={false}
+          style={{height: '100vh', width: '100%', overflow: 'hidden'}}
       >
         <TileLayer
             url="https://mt3.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&scale=2"
         />
 
-        <Polyline positions={polylineCoordinates} color="blue" weight={5} />
-
-        <Marker position={markerPosition}>
-          <Popup>
-          </Popup>
-        </Marker>
-
-        <Marker position={center}>
-          <Popup>
-          </Popup>
-        </Marker>
+        {polylineCoordinates && <Polyline positions={polylineCoordinates.map((p) => [p.lat, p.lng])} color="blue" weight={5}/>}
+        {markers && markers.map((marker, index) => (
+         <Marker key={index} position={[marker.lat, marker.lng]}></Marker>
+        ))}
 
       </MapContainer>
   );
-};
+});
 
 export default MapPage;

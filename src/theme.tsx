@@ -1,169 +1,147 @@
-import styled, {css, DefaultTheme} from "styled-components";
+import { createTheme, type ThemeOptions } from '@mui/material/styles';
 
-export interface Theme extends DefaultTheme {
-
-}
-
-export interface Dimens {
-  contentWidth: string,
-}
-
-export interface TextTheme {
-  headline1: TextStyle;
-  headline2: TextStyle;
-  headline3: TextStyle;
-  headline4: TextStyle;
-  headline5: TextStyle;
-  headline6: TextStyle;
-  label: TextStyle;
-  body: TextStyle;
-  error: TextStyle;
-  input: TextStyle;
-  button: TextStyle;
-}
-
-interface TextStyleData {
-  size?: string;
-  weight?: string;
-  height?: string;
-  color?: string;
-}
-
-export class TextStyle {
-  _overrides: { [k: string]: TextStyle } = {};
-
-  _overridesKey(overrides: TextStyleData): string {
-    let value = '';
-    for (const style of Object.values(overrides)) {
-      value += style;
-    }
-    return value;
-  }
-
-  data: TextStyleData;
-  span: any;
-
-  constructor(data: TextStyleData) {
-    this.data = data;
-    this.span = styled.span`
-          ${() => this.css}
-        `;
-  }
-
-  with(overrides: TextStyleData): TextStyle {
-    const key = this._overridesKey(overrides);
-    if (!this._overrides[key]) {
-      this._overrides[key] = new TextStyle(
-          {
-            ...this.data,
-            ...overrides
-          }
-      );
-    }
-    return this._overrides[key];
-  }
-
-  style(theme?: Theme) {
-    return {
-      color: this.data.color || theme?.content,
-      fontSize: this.data.size || theme?.textTheme.body.data.size,
-      fontWeight: this.data.weight || theme?.textTheme.body.data.weight,
-      lineHeight: this.data.height || theme?.textTheme.body.data.height,
-    }
-  }
-
-  get css() {
-    return ({theme}: { theme: Theme }) => css`
-          color: ${this.data.color || theme.content};
-          font-size: ${this.data.size || theme.textTheme.body.data.size};
-          font-weight: ${this.data.weight || theme.textTheme.body.data.weight};
-          line-height: ${this.data.height || theme.textTheme.body.data.height};
-        `;
-  }
-}
+// --- 1. Custom Colors and Dimens (Kept separate but simplified) ---
 
 export abstract class DujppColors {
-  static contentShade = '#6a696e'; // textInactive / iconPrimary
+  static contentShade = '#6a696e'; // textSecondary / iconPrimary
   static content = '#3a383c';      // textPrimary
-  static content50 = 'rgba(58,56,60,0.5)'; // 50% opacity of content
-  static content10 = 'rgba(58,56,60,0.1)'; // 10% opacity of content
-  static content5 = 'rgba(58,56,60,0.05)'; // 5% opacity of content
+  static content50 = 'rgba(58,56,60,0.5)';
   static primary = '#69d19d';      // primary
-  static primaryDark = '#61ab6f';  // messageTextSuccess
-  static neutral = '#FFFFFF';      // neutral
-  static shade = '#f2f2f2';        // messageBackgroundInfo
-  static idle = '#d7d7d7';         // iconDisabled
-  static error = '#e24a4a';        // messageTextError
+  static primaryDark = '#61ab6f';
+  static neutral = '#FFFFFF';      // background.default, paper
+  static shade = '#f2f2f2';        // background.light
+  static idle = '#d7d7d7';         // action.disabled
+  static error = '#e24a4a';        // error
 }
 
-export interface StyledProps {
-  theme: Theme;
-
-  [x: string]: any;
+export interface CustomDimens {
+  contentWidth: string;
 }
 
-export const DujppTheme: Theme = {
-  primary: DujppColors.primary,
-  primaryDark: DujppColors.primaryDark,
-  neutral: DujppColors.neutral,
-  content: DujppColors.content,
-  content50: DujppColors.content50,
-  content10: DujppColors.content10,
-  content5: DujppColors.content5,
-  contentShade: DujppColors.contentShade,
-  shade: DujppColors.shade,
-  idle: DujppColors.idle,
-  error: DujppColors.error,
+// 2. Define Module Augmentation for custom properties (Dimens)
+// This lets TypeScript know that the MUI Theme object has your custom Dimens.
+declare module '@mui/material/styles' {
+  interface Theme {
+    dimens: CustomDimens;
+    content: string; // Add your custom color properties to the theme interface
+    contentShade: string;
+    content50: string;
+    // ... add others if you use them directly from theme
+  }
+  // allow configuration using `createTheme`
+  interface ThemeOptions {
+    dimens?: CustomDimens;
+    content?: string;
+    contentShade?: string;
+    content50?: string;
+  }
+}
+
+// --- 3. MUI Theme Configuration (DujppThemeOptions) ---
+
+const DujppThemeOptions: ThemeOptions = {
+  // Add custom properties here
   dimens: {
     contentWidth: '500px',
   },
-  textTheme: {
-    headline1: new TextStyle({
-      size: '60px',
-      weight: 'bold',
-    }),
-    headline2: new TextStyle({
-      size: '40px',
-      weight: '300',
-      color: DujppColors.content,
-    }),
-    headline3: new TextStyle({
-      size: '30px',
-      weight: '400'
-    }),
-    headline4: new TextStyle({
-      size: '23px',
-      weight: '400'
-    }),
-    headline5: new TextStyle({
-      size: '20px',
-      weight: '700'
-    }),
-    headline6: new TextStyle({
-      size: '15px',
-      weight: 'bold'
-    }),
-    label: new TextStyle({
-      size: '15px',
-      weight: '600',
-      color: DujppColors.contentShade
-    }),
-    body: new TextStyle({
-      size: '13px',
-    }),
-    error: new TextStyle({
-      size: '15px',
-      color: 'red'
-    }),
-    input: new TextStyle({
-      size: '24px',
-      color: 'black',
-      height: '1.2',
-    }),
-    button: new TextStyle({
-      size: '15px',
-      weight: 'bold',
-      color: DujppColors.content,
-    })
+  content: DujppColors.content, // custom color property
+  contentShade: DujppColors.contentShade, // custom color property
+  content50: DujppColors.content50, // custom color property
+
+  // MUI standard properties
+  palette: {
+    primary: {
+      main: DujppColors.primary,
+      dark: DujppColors.primaryDark,
+      contrastText: DujppColors.content, // or white, depending on your design
+    },
+    error: {
+      main: DujppColors.error,
+    },
+    background: {
+      default: DujppColors.neutral,
+      paper: DujppColors.neutral,
+    },
+    text: {
+      primary: DujppColors.content,
+      secondary: DujppColors.contentShade,
+      disabled: DujppColors.idle,
+    },
   },
+
+  // Map your custom TextTheme to MUI's standard typography variants
+  typography: {
+    fontFamily: ['Roboto', 'Arial', 'sans-serif'].join(','), // Example font family
+
+    h1: { // Corresponds to your 'headline1'
+      fontSize: '60px',
+      fontWeight: 'bold',
+      color: DujppColors.content,
+    },
+    h2: { // Corresponds to your 'headline2'
+      fontSize: '40px',
+      fontWeight: '300',
+      color: DujppColors.content,
+    },
+    h3: { // Corresponds to your 'headline3'
+      fontSize: '30px',
+      fontWeight: '400',
+    },
+    h4: { // Corresponds to your 'headline4'
+      fontSize: '23px',
+      fontWeight: '400',
+    },
+    h5: { // Corresponds to your 'headline5'
+      fontSize: '20px',
+      fontWeight: '700',
+    },
+    h6: { // Corresponds to your 'headline6'
+      fontSize: '15px',
+      fontWeight: 'bold',
+    },
+    subtitle1: { // Corresponds to your 'label' or another distinct style
+      fontSize: '15px',
+      fontWeight: '600',
+      color: DujppColors.contentShade,
+    },
+    body1: { // Corresponds to your 'body'
+      fontSize: '13px',
+      fontWeight: '400',
+      color: DujppColors.content,
+    },
+    button: { // Corresponds to your 'button'
+      fontSize: '15px',
+      fontWeight: 'bold',
+      color: DujppColors.content,
+      textTransform: 'none', // Often desired for custom designs
+    },
+    caption: { // Can be used for small, error, or input placeholder text
+      fontSize: '15px',
+      color: DujppColors.error, // Could be your 'error' style
+    }
+  },
+
+  // Mui components can be customized globally here
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          // Example: Apply 'button' typography style
+          ...({} as any), // Use spread for cleaner application
+        },
+      },
+      defaultProps: {
+        disableElevation: true,
+      }
+    }
+    // You can customize DatePicker components here too
+  }
 };
+
+// --- 4. Export the final theme object created by MUI's factory function ---
+
+/**
+ * The final MUI Theme object for the application.
+ * Use this with <ThemeProvider theme={DujppTheme} />
+ */
+export const DujppTheme = createTheme(DujppThemeOptions);

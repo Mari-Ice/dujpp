@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, {type ReactElement} from 'react';
 
 interface MultiProviderProps {
   children: any;
@@ -6,7 +6,7 @@ interface MultiProviderProps {
   providers: ReactElement<any>[];
 }
 
-const MultiProvider = (props: MultiProviderProps) => {
+export const MultiProvider = (props: MultiProviderProps) => {
   let content = props.children;
 
   const numberOfProviders = props.providers.length;
@@ -25,5 +25,3 @@ const MultiProvider = (props: MultiProviderProps) => {
 
   return content;
 }
-
-export default MultiProvider;
