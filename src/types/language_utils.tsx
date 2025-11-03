@@ -11,7 +11,12 @@ export const translations = {
     showMap: 'Show map',
     timetable: 'Show timetable',
     confirmLocation: 'Confirm location',
-
+    userLocationError: 'Location access denied.',
+    chooseStation: 'Where are you going?',
+    dateError: 'Choose a valid date.',
+    noStartStation: 'No start station selected.',
+    noEndStation: 'No end station selected.',
+    sameStationsError: 'Start and end stations cannot be the same.',
   },
   'sl': {
     appName: 'Dujpp',
@@ -23,6 +28,12 @@ export const translations = {
     showMap: 'Prikaži na zemljevidu',
     timetable: 'Prikaži vozni red',
     confirmLocation: 'Potrdi lokacijo',
+    userLocationError: 'Dostop do lokacije uporabnika onemogočen.',
+    chooseStation: 'Kam potujete?',
+    dateError: 'Izberite veljaven datum.',
+    noStartStation: 'Izberite vstopno postajo.',
+    noEndStation: 'Izberite izstopno postajo.',
+    sameStationsError: 'Vstopna in izstopna postaja ne moreta biti enaki.',
   },
 
 };

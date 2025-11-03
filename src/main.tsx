@@ -10,9 +10,6 @@ import {configure} from "mobx";
 import {AppStore} from "./stores/app_store";
 import {MultiProvider} from './utils'
 import {DujppTheme} from "./theme";
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-
 configure({
   enforceActions: "never",
 })
@@ -33,7 +30,6 @@ createRoot(document.getElementById('root')!).render(
     <MultiProvider providers={[
       <AppStoreContext.Provider value={appStore}/>,
       <MuiThemeProvider theme={DujppTheme} />,
-      <LocalizationProvider dateAdapter={AdapterDayjs}/>,
     ]}>
       <BrowserRouter>
         <App />
