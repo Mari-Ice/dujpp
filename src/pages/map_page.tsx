@@ -1,9 +1,9 @@
 import {MapContainer, TileLayer, Marker, Polyline, Popup} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import {observer} from "mobx-react-lite";
-import LocationMarker from "../components/location_marker.tsx";
+import LocationMarker from "../components/map/location_marker.tsx";
 import L from "leaflet";
-import type {Station} from "../types/stations.tsx";
+import type {Station} from "../types/stations.ts";
 
 export interface Position {
   lat: number;

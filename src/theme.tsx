@@ -133,7 +133,7 @@ const DujppThemeOptions: ThemeOptions = {
       defaultProps: {
         disableElevation: true,
       }
-    }
+    },
     // You can customize DatePicker components here too
   }
 };

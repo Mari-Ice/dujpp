@@ -3,17 +3,23 @@ import MapIcon from '@mui/icons-material/Map';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import {useAppStore} from "../main.tsx";
 import {observer} from "mobx-react-lite";
-import DAutocomplete from "../components/dautocomplete.tsx";
-import DButton from "../components/dbutton.tsx";
+import DAutocomplete from "../components/fields_buttons/dautocomplete.tsx";
+import DButton from "../components/fields_buttons/dbutton.tsx";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MapPage from "./map_page.tsx";
 import Typography from "@mui/material/Typography";
 import {useState} from "react";
-import type {Station} from "../types/stations.tsx";
+import type {Station} from "../types/stations.ts";
+import {useNavigate} from "react-router-dom";
+import Body from "../components/common/body.tsx";
+import {AppRoutes, buildRoute, ParamKeys} from "../types/route_utils.tsx";
 
 const ChooseTimetablePage = observer(() => {
-  const store = useAppStore();
-  const t = store.t;
+  const appStore = useAppStore();
+  const store = appStore.locationStore;
+  if (!store) return null;
+  const navigate = useNavigate();
+  const t = appStore.t;
   const [inMapStation, setInMapStation] = useState<Station | undefined>(undefined);
   const polyline = [];
   const storeOtherStation = store.showMap === 'start' ? store.endStation : store.startStation;
@@ -27,20 +33,14 @@ const ChooseTimetablePage = observer(() => {
     }
   }
   return (
-      <Box sx={{
-        height: '100%',
-        position: 'relative',
-        overflow: 'hidden',
-        maxWidth: '1000px',
-        margin: 'auto',
-      }}>
+      <Body>
         <Stack sx={{
           alignItems: 'center',
           margin: 'auto',
           padding: '20px',
           height: '-webkit-fill-available'
         }}>
-          <Typography variant={'h1'} marginTop={'10vh'} marginBottom={'-20vh'}>{t('chooseStation')}</Typography>
+          <Typography variant={'h1'} marginTop={'1vh'} marginBottom={'-2vh'}>{t('chooseStation')}</Typography>
           <Stack sx={{
             gap: '10px',
             width: '100%',
@@ -54,7 +54,7 @@ const ChooseTimetablePage = observer(() => {
               },
             }} onError={(newError) => {
               store.errors(newError?.toString() ?? undefined, 'date')
-            }} onChange={(e) => store.setDate(e?.toDate() ?? null)}/>
+            }} onChange={(e) => store.setDate(e?.startOf('day'))} value={store.date}/>
             <StationChooser label={t('startStation')} onChange={v => store.setStartStation(v)}
                             options={store.mockStations}
                             onMap={() => {
@@ -63,19 +63,23 @@ const ChooseTimetablePage = observer(() => {
                             }} value={store.startStation} showMapButton={true} error={store.getError('startStation')}/>
             <StationChooser label={t('endStation')} onChange={v => store.setEndStation(v)}
                             options={store.mockStations} onMap={() => {
-                              store.showMap = 'end';
-                              setInMapStation(store.endStation);
-                            }} value={store.endStation}
+              store.showMap = 'end';
+              setInMapStation(store.endStation);
+            }} value={store.endStation}
                             showMapButton={true} error={store.getError('endStation')}/>
           </Stack>
 
 
           <DButton label={t('timetable')} onClick={() => {
-                                                  store.validateFields();
-                                                  if (!(store.getError('date') || store.getError('startStation') || store.getError('endStation'))) {
-                                                    // navigate to timetable page
-                                                  }
-                                                  }}/>
+            store.validateFields();
+            if (!(store.getError('date') || store.getError('startStation') || store.getError('endStation'))) {
+              navigate(buildRoute(AppRoutes.FARES, {
+                [ParamKeys.START_STATION]: store.startStation!.id,
+                [ParamKeys.END_STATION]: store.endStation!.id,
+                [ParamKeys.TIME_FROM]: store.date!.toDate().toISOString(),
+              }, {[ParamKeys.LANGUAGE]: appStore.language,}));
+            }
+          }}/>
 
         </Stack>
         <Slide
@@ -92,7 +96,7 @@ const ChooseTimetablePage = observer(() => {
             overflow: 'hidden',
             background: (theme) => `linear-gradient(
                 to top,
-                ${theme.palette.background.paper} 90%,    /* Solid background up to 90% */
+                ${theme.palette.background.paper} 95%,    /* Solid background up to 90% */
                 ${theme.palette.background.paper}00 100%  /* Fully transparent at 100% */
             )`,
             alignContent: 'end',
@@ -104,7 +108,7 @@ const ChooseTimetablePage = observer(() => {
                               options={store.mockStations} value={inMapStation} showMapButton={false}/>
             </Box>
             <Box sx={{
-              overflow: 'hidden', position: 'relative', borderTopLeftRadius: '20px', height: 'calc(100% - 150px)',
+              overflow: 'hidden', position: 'relative', borderTopLeftRadius: '20px', height: 'calc(100% - 100px)',
               borderTopRightRadius: '20px', backgroundColor: 'blue',
             }}>
               <Box sx={{position: 'relative'}}>
@@ -159,7 +163,7 @@ const ChooseTimetablePage = observer(() => {
           </Box>
 
         </Slide>
-      </Box>
+      </Body>
   );
 });
 

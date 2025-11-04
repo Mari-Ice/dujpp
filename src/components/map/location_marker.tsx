@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Marker, Popup, useMapEvents } from 'react-leaflet';
 import L, {LatLng} from 'leaflet';
-import {useAppStore} from "../main.tsx";
+import {useAppStore} from "../../main.tsx";
 import {observer} from "mobx-react-lite";
 
 const userIcon = new L.Icon({
@@ -12,7 +12,9 @@ const userIcon = new L.Icon({
 });
 
 const LocationMarker = observer(() => {
-  const store = useAppStore();
+  const appStore = useAppStore();
+  const store = appStore.locationStore;
+  if (!store) return null;
 
   const map = useMapEvents({
     // This event fires when Leaflet successfully locates the user
