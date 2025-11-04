@@ -10,6 +10,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import TimetableDetailModal from "../components/timetables/timetable_detail_modal.tsx";
 import DButton from "../components/fields_buttons/dbutton.tsx";
 import InvalidParams from "./invalid_params.tsx";
+import {useEffect} from "react";
 
 const Fares = observer(() => {
   const appStore = useAppStore();
@@ -19,6 +20,9 @@ const Fares = observer(() => {
   const store = appStore.faresStore;
 
   const [searchParams] = useSearchParams();
+  useEffect(() => {
+    store?.setupParams(searchParams);
+  }, [searchParams]);
 
   if (!store) return null;
   if (!store.initialized) {

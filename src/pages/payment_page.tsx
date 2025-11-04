@@ -10,6 +10,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import NumericalIncrement from "../components/fields_buttons/numerical_increment.tsx";
 import DButton from "../components/fields_buttons/dbutton.tsx";
 import Ticket from "./ticket.tsx";
+import {useEffect} from "react";
 
 
 const PaymentPage = observer(() => {
@@ -18,6 +19,10 @@ const PaymentPage = observer(() => {
   const store = appStore.paymentStore;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    store?.setupParams(searchParams);
+  }, [searchParams]);
 
   if (!store) return null;
   if (!store.initialized) {
