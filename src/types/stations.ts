@@ -219,14 +219,12 @@ export function fetchTimetables(query: TimetableQuery): Promise<RunDetail[]> {
               // Extract only the relevant stops (start and end) for display.
               // Note: If you want to show ALL stops, you'd use 'run.stops' here.
               // I'll include the segment of stops from start to end, inclusive.
-              const relevantStops = run.stops.slice(startStopIndex, endStopIndex + 1);
-
               results.push({
                 companyName: line.companyName,
                 lineId: line.lineId,
                 lineName: line.lineName,
                 runId: run.runId,
-                stops: relevantStops,
+                stops: run.stops,
               });
             }
           }

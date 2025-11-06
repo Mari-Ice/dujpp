@@ -2,7 +2,6 @@ import {observer} from "mobx-react-lite";
 import {Stack, IconButton, Typography} from "@mui/material";
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded';
-import {DujppColors} from "../../theme.tsx";
 
 interface NumericalIncrementProps {
   value: number;
@@ -21,10 +20,13 @@ const NumericalIncrement =
             <IconButton onClick={() => {
               if (value - step >= min) onChange(value - step)
             }} disabled={value - step < min} sx={{
-              padding: '3px', backgroundColor: DujppColors.primary,
-              color: DujppColors.content,
+              padding: '3px', backgroundColor: 'primary.main',
+              color: 'primary.contrastText',
               '&:focus': {
-                backgroundColor: DujppColors.primary,
+                backgroundColor: 'primary.main',
+              },
+              '&:hover': {
+                backgroundColor: 'background.paper',
               }
             }}
             ><RemoveRoundedIcon/></IconButton>
@@ -32,10 +34,13 @@ const NumericalIncrement =
             <IconButton onClick={() => {
               if (value + step <= max) onChange(value + step)
             }} disabled={value + step > max} sx={{
-              padding: '3px', backgroundColor: DujppColors.primary,
-              color: DujppColors.content,
+              padding: '3px', backgroundColor: 'primary.main',
+              color: 'primary.contrastText',
               '&:focus': {
-                backgroundColor: DujppColors.primary,
+                backgroundColor: 'primary.main',
+              },
+              ':&:hover': {
+                backgroundColor: 'background.paper',
               }
             }}>
               <AddRoundedIcon/></IconButton>

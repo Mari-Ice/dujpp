@@ -22,16 +22,22 @@ const Header = observer(() => {
   return (
       <AppBar position={'static'} >
         <Toolbar sx={{justifyContent: 'space-between'}}>
-          <Typography variant={'h4'} onClick={() => navigate(buildRoute(AppRoutes.HOME, undefined, {[ParamKeys.LANGUAGE]: store.language}))} sx={{cursor: 'pointer'}}>Dujpp</Typography>
+          <Typography variant={'h4'} onClick={() => navigate(buildRoute(AppRoutes.HOME, undefined, {[ParamKeys.LANGUAGE]: store.language}))} sx={{cursor: 'pointer'}}>
+            <img src={'/dujpp_neg.svg'} alt={'Dujpp'} style={{width: '80px', margin: '10px'}}/>
+          </Typography>
           <Select labelId="label" id="select" value={store.language}
                   renderValue={(v) =>
                       <Stack direction={'row'} gap={'10px'} alignItems={'center'}>
                         {languageToFlag(v)}
-                        {v?.toUpperCase()}
+                        <Typography color={'primary.contrastText'}>{v?.toUpperCase()}</Typography>
                       </Stack>}
                   variant={'standard'} disableUnderline={true}
                   size={'small'}
-                  sx={{'& .css-1nblfdq-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiInput-input': {padding: '0px'}}}
+                  sx={{'& .css-1nblfdq-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiInput-input': {padding: '0px'},
+                    '& .MuiSvgIcon-root': {
+                      color: 'primary.contrastText', // Sets the color to the theme's textSecondary value
+                    }
+                  }}
                   onChange={(e) => handleLanguageChange(e)}>
             {languages.map((lang) => {
               return (

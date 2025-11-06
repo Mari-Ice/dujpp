@@ -1,17 +1,25 @@
 import { createTheme, type ThemeOptions } from '@mui/material/styles';
+import '@fontsource/barlow/300.css'; // Light
+import '@fontsource/barlow/400.css'; // Regular
+import '@fontsource/barlow/500.css'; // Medium
+import '@fontsource/barlow/700.css'; // Bold
 
 // --- 1. Custom Colors and Dimens (Kept separate but simplified) ---
 
 export abstract class DujppColors {
-  static contentShade = '#6a696e'; // textSecondary / iconPrimary
-  static content = '#3a383c';      // textPrimary
-  static content50 = 'rgba(58,56,60,0.5)';
-  static primary = '#69d19d';      // primary
-  static primaryDark = '#61ab6f';
+  static contentShade = '#ffffff'; // textSecondary / iconPrimary
+  static content = '#08152c';      // textPrimary
+  static content50 = '#163446';
+  static contentNeutral = '#002623';
+  static primary = '#004a8a';      // primary
+  static primaryDark = '#004a8a';
+  static primaryLight = '#446da5';
+  static secondary = '#8ac63e';
+  static secondaryLight = '#aed474';
   static neutral = '#FFFFFF';      // background.default, paper
-  static shade = '#f2f2f2';        // background.light
+  static shade = '#dbe0e6';        // background.light
   static idle = '#d7d7d7';         // action.disabled
-  static error = '#e24a4a';        // error
+  static error = '#c83f3f';        // error
 }
 
 export interface CustomDimens {
@@ -53,7 +61,14 @@ const DujppThemeOptions: ThemeOptions = {
     primary: {
       main: DujppColors.primary,
       dark: DujppColors.primaryDark,
-      contrastText: DujppColors.content, // or white, depending on your design
+      light: DujppColors.primaryLight,
+      contrastText: DujppColors.contentShade,
+    },
+    secondary: {
+      main: DujppColors.secondary,
+      dark: DujppColors.secondary,
+      light: DujppColors.secondaryLight,
+      contrastText: DujppColors.contentShade,
     },
     error: {
       main: DujppColors.error,
@@ -71,7 +86,7 @@ const DujppThemeOptions: ThemeOptions = {
 
   // Map your custom TextTheme to MUI's standard typography variants
   typography: {
-    fontFamily: ['Roboto', 'Arial', 'sans-serif'].join(','), // Example font family
+    fontFamily: ['Barlow', 'Roboto', 'Arial', 'sans-serif'].join(','), // Example font family
 
     h1: { // Corresponds to your 'headline1'
       fontSize: '60px',
@@ -123,18 +138,18 @@ const DujppThemeOptions: ThemeOptions = {
 
   // Mui components can be customized globally here
   components: {
-    MuiButton: {
+    MuiIconButton: {
       styleOverrides: {
-        root: {
-          // Example: Apply 'button' typography style
-          ...({} as any), // Use spread for cleaner application
-        },
+        root: ({theme}) => ({
+          color: theme.palette.primary.main,
+          // Define styles for the hover state
+          '&:hover': {
+            // color: theme.palette.primary.contrastText,
+            backgroundColor: theme.palette.primary.light + '50',
+          },
+        }),
       },
-      defaultProps: {
-        disableElevation: true,
-      }
     },
-    // You can customize DatePicker components here too
   }
 };
 

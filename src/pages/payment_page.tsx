@@ -5,12 +5,13 @@ import {AppRoutes, buildRoute, ParamKeys} from "../types/route_utils.tsx";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import InvalidParams from "./invalid_params.tsx";
 import { observer } from "mobx-react-lite";
-import Summary from "../components/timetables/summary.tsx";
+import Summary from "../components/payment/summary.tsx";
 import CircularProgress from "@mui/material/CircularProgress";
 import NumericalIncrement from "../components/fields_buttons/numerical_increment.tsx";
 import DButton from "../components/fields_buttons/dbutton.tsx";
 import Ticket from "./ticket.tsx";
 import {useEffect} from "react";
+import StripePayment from "../components/payment/stripe_payment.tsx";
 
 
 const PaymentPage = observer(() => {
@@ -37,8 +38,9 @@ const PaymentPage = observer(() => {
 
   return (
       <Body>
+        <Stack sx={{padding: '20px', justifyContent: 'space-between', height: 'calc(100% - 60px)'}}>
         {!store.validParams ? <InvalidParams/> :
-            !store.paymentSuccessful ?
+            !store.paymentSuccessful ? !store.paymentStarted ?
             <Stack alignItems={'start'} padding={'20px'} gap={'20px'} height={'100%'}>
               <Typography variant={'h2'}>{t('paymentPageTitle')}</Typography>
               {!store.runDetail ? <CircularProgress /> : <Summary runDetail={store.runDetail} startStop={store.startStation} endStop={store.endStation}/>}
@@ -47,13 +49,15 @@ const PaymentPage = observer(() => {
               <NumericalIncrement value={store.children06} onChange={(v) => store.setChildren06(v)} label={t('children06')}/>
               <NumericalIncrement value={store.baggage} onChange={(v) => store.setBaggage(v)} label={t('baggage')}/>
               <Typography variant={'h3'}>{t('totalPrice')}: {store.price} EUR</Typography>
-              <DButton label={t('pay')} onClick={() => {
-                store.pay();
+              <DButton label={t('proceedToPayment')} onClick={() => {
+                store.startPayment();
               }} sx={{justifySelf: 'end'}}/>
             </Stack>
+                : <StripePayment />
                 : <Ticket />
         }
         <DButton label={t('travelingElsewhere')} onClick={() => navigate(buildRoute(AppRoutes.HOME, undefined, {[ParamKeys.LANGUAGE]: appStore.language}))}/>
+      </Stack>
       </Body>
   );
 });

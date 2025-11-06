@@ -1,4 +1,4 @@
-import {Stack, Typography, Box} from "@mui/material";
+import {Stack, Typography, Box, Accordion, AccordionDetails, AccordionSummary} from "@mui/material";
 import {observer} from "mobx-react-lite";
 import {useAppStore} from "../main.tsx";
 import Body from "../components/common/body.tsx";
@@ -11,6 +11,7 @@ import TimetableDetailModal from "../components/timetables/timetable_detail_moda
 import DButton from "../components/fields_buttons/dbutton.tsx";
 import InvalidParams from "./invalid_params.tsx";
 import {useEffect} from "react";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const Fares = observer(() => {
   const appStore = useAppStore();
@@ -36,29 +37,47 @@ const Fares = observer(() => {
   }
   return (
       <Body>
-        {!store.validStations ? <InvalidParams />
+        {!store.validStations ? <InvalidParams/>
             : <Stack
-                sx={{justifyContent: 'start', alignItems: 'center', padding: '20px', height: '100%', display: 'flex'}}>
-              <Typography variant={'h3'}>{t('availableFares')}</Typography>
+                sx={{
+                  justifyContent: 'start',
+                  alignItems: 'center',
+                  padding: '10px 20px ',
+                  height: '100%',
+                  display: 'flex',
+                  gap: '5px'
+                }}>
+              <Typography variant={'h4'}>{t('availableFares')}</Typography>
 
-              <Stack gap={'15px'} sx={{width: '100%', paddingY: '20px', flexShrink: 0}}>
-                <Typography variant={'h6'}>{t('startStation')}: {store.startStation?.label}</Typography>
-                <Typography variant={'h6'}>{t('endStation')}: {store.endStation?.label}</Typography>
-                <MobileDateTimePicker localeText={{
-                  toolbarTitle: store.t('selectDateTime'),
-                  cancelButtonLabel: store.t('cancelButton'),
-                  nextStepButtonLabel: store.t('nextButton'),
-                }} value={store.timeFrom} onChange={(e) => store.setTimeFrom(e)} format={t('dateTimeFormat')}
-                                      label={t('departureTime')}
-                />
-                <MobileDateTimePicker localeText={{
-                  toolbarTitle: store.t('selectDateTime'),
-                  cancelButtonLabel: store.t('cancelButton'),
-                  nextStepButtonLabel: store.t('nextButton'),
-                }} value={store.timeTo} onChange={(e) => store.setTimeFrom(e)} format={t('dateTimeFormat')}
-                                      label={t('arrivalTime')}
-                />
-              </Stack>
+              <Accordion variant={'outlined'} sx={{'&.Mui-expanded': {margin: '0px'}, '&.MuiAccordion-root': {borderColor: 'secondary.main'}}}>
+                <AccordionSummary >
+                  <Stack direction={'row'} width={'100%'} justifyContent={'space-between'} alignItems={'center'}>
+                    <ArrowDropDownIcon/>
+                    <Stack sx={{marginLeft: '-20px'}}><Typography variant={'body1'}>{t('startStation')}:</Typography> <Typography
+                        fontWeight={'bold'}>{store.startStation?.label}</Typography></Stack>
+                    <Stack alignItems={'end'}>
+                      <Typography variant={'body1'} textAlign={'end'}>{t('endStation')}: </Typography><Typography
+                        fontWeight={'bold'}>{store.endStation?.label}</Typography></Stack>
+                  </Stack>
+                </AccordionSummary>
+                <AccordionDetails sx={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
+                  <MobileDateTimePicker localeText={{
+                    toolbarTitle: store.t('selectDateTime'),
+                    cancelButtonLabel: store.t('cancelButton'),
+                    nextStepButtonLabel: store.t('nextButton'),
+                  }} value={store.timeFrom} onChange={(e) => store.setTimeFrom(e)} format={t('dateTimeFormat')}
+                                        label={t('departureTime')}
+                  />
+                  <MobileDateTimePicker localeText={{
+                    toolbarTitle: store.t('selectDateTime'),
+                    cancelButtonLabel: store.t('cancelButton'),
+                    nextStepButtonLabel: store.t('nextButton'),
+                  }} value={store.timeTo} onChange={(e) => store.setTimeFrom(e)} format={t('dateTimeFormat')}
+                                        label={t('arrivalTime')}
+                  />
+                </AccordionDetails>
+              </Accordion>
+
               {store.loading ? <Typography sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -71,9 +90,11 @@ const Fares = observer(() => {
                   <Timetables timetables={store.timetables} onSelectedRun={(r) => {
                     store?.setOpenModal(r);
                   }}/>}
-              <Box sx={{marginBottom:'50px', marginTop: '20px'}}>
-              <DButton label={t('travelingElsewhere')}
-                       onClick={() => navigate(buildRoute(AppRoutes.HOME, undefined, {[ParamKeys.LANGUAGE]: appStore.language}))}/>
+              <Box sx={{marginBottom: '30px', marginTop: '5px'}}>
+                <DButton label={t('travelingElsewhere')}
+                         onClick={() => {
+                           navigate(buildRoute(AppRoutes.HOME, undefined, {[ParamKeys.LANGUAGE]: appStore.language}))
+                         }}/>
               </Box>
             </Stack>
         }

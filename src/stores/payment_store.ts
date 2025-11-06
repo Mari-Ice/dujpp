@@ -23,6 +23,7 @@ export class PaymentStore {
   baggage: number = 0;
   _paymentSuccessful: boolean = false;
   _paymentId?: string;
+  _paymentStarted: boolean = false;
 
   constructor(t: (key: TranslationKey) => string) {
     makeAutoObservable(this);
@@ -110,11 +111,19 @@ export class PaymentStore {
 
   get paymentSuccessful() {
     this._paymentId = '123456789';
-    return this._paymentSuccessful;
+    return this._paymentSuccessful && this._paymentStarted;
   }
 
   paymentId() {
     return this._paymentId;
+  }
+
+  startPayment() {
+    this._paymentStarted = true;
+  }
+
+  get paymentStarted() {
+    return this._paymentStarted;
   }
 
 }

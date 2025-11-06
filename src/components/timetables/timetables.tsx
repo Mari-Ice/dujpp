@@ -31,10 +31,11 @@ const Timetables = observer(({timetables, onSelectedRun}: TimetableProps) => {
                   padding: '5px',
                   cursor: 'pointer',
                   transition: '0.3s',
+                  boxShadow: 2,
                   '&:hover': {
+                    boxShadow: 6,
                     backgroundColor: 'action.hover',
                   },
-                  boxShadow: 2,
                 }}
           >
             <Stack justifyContent="space-between" alignItems="center" width={'100%'} direction={'row'}>
@@ -43,7 +44,10 @@ const Timetables = observer(({timetables, onSelectedRun}: TimetableProps) => {
                 <Typography variant={'body2'}>{store.startStation.label}</Typography>
                 <Typography variant={'h6'}>{findStopTime(timetable, store.startStation.id)}</Typography>
               </Stack>
+              <Stack minWidth={'100px'} alignItems={'center'}>
               <ArrowForwardRoundedIcon fontSize={'large'} color={'primary'}/>
+                <Typography variant={'body1'} fontSize={'11px'} textAlign={'center'}>{timetable.companyName}</Typography>
+              </Stack>
               <Stack  justifyContent={'space-between'} alignItems={'end'} width={'100%'}>
                 <Typography color={'textDisabled'}>{t('arrival')}</Typography>
                 <Typography variant={'body2'}>{store.endStation.label}</Typography>

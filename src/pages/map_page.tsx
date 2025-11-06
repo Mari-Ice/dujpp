@@ -4,6 +4,7 @@ import {observer} from "mobx-react-lite";
 import LocationMarker from "../components/map/location_marker.tsx";
 import L from "leaflet";
 import type {Station} from "../types/stations.ts";
+import {DujppColors} from "../theme.tsx";
 
 export interface Position {
   lat: number;
@@ -52,14 +53,14 @@ const LocationPinSVGTemplate = (fillColor: string) => `
   </svg>
 `;
 
-const MarkerIcon = ({itemKey, lat, lng, markerInfo, onClick, station, color = 'blue'}: {
+const MarkerIcon = ({itemKey, lat, lng, markerInfo, onClick, station, color = DujppColors.primary}: {
   itemKey: string | number,
   lat: number,
   lng: number,
   markerInfo: string,
   onClick?: (v: Station | undefined) => void,
   station?: Station,
-  color?: 'red' | 'blue' | 'green' | '',
+  color?: string,
 }) => {
 
   const currentColor = color;

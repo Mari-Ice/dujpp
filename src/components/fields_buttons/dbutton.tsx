@@ -1,4 +1,5 @@
 import {Button, type SxProps} from "@mui/material";
+import {DujppColors} from "../../theme.tsx";
 
 interface DButtonProps {
   label: string;
@@ -9,7 +10,8 @@ interface DButtonProps {
 
 const DButton = ({label, onClick, disabled, sx}: DButtonProps) => {
   return (
-    <Button disabled={disabled} onClick={onClick} variant={'contained'} fullWidth sx={{...sx}}>
+    <Button disabled={disabled} onClick={onClick} variant={'contained'} fullWidth sx={{'&:hover': {boxShadow: 4, backgroundColor: DujppColors.primary + 'EE'},
+      ...sx}}>
       {label}
     </Button>
   );

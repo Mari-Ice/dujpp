@@ -17,7 +17,6 @@ export const translations = {
     noStartStation: 'No start station selected.',
     noEndStation: 'No end station selected.',
     sameStationsError: 'Start and end stations cannot be the same.',
-    chooseTransportLane: 'Choose transport ',
     availableFares: 'Available fares',
     invalidParams: 'Search parameters invalid. The page will redirect back to the main page in ',
     seconds: ' seconds',
@@ -45,6 +44,9 @@ export const translations = {
     baggage: 'Baggage',
     pay: 'Pay',
     totalPrice: 'Total price',
+    download: 'Download',
+    share: 'Share',
+    proceedToPayment: 'Proceed to Payment',
   },
   'sl': {
     appName: 'Dujpp',
@@ -89,6 +91,9 @@ export const translations = {
     baggage: 'Prtljaga',
     pay: 'Plačaj',
     totalPrice: 'Skupaj',
+    download: 'Prenesi',
+    share: 'Deli',
+    proceedToPayment: 'Nadaljuj na plačilo',
   },
 
 };

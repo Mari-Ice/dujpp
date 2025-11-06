@@ -13,6 +13,7 @@ import type {Station} from "../types/stations.ts";
 import {useNavigate} from "react-router-dom";
 import Body from "../components/common/body.tsx";
 import {AppRoutes, buildRoute, ParamKeys} from "../types/route_utils.tsx";
+import {DujppColors} from "../theme.tsx";
 
 const ChooseTimetablePage = observer(() => {
   const appStore = useAppStore();
@@ -116,7 +117,7 @@ const ChooseTimetablePage = observer(() => {
                   const isOtherStation = storeOtherStation !== undefined && store.isEqualStations(s, storeOtherStation);
                   return {
                     station: s,
-                    color: isOtherStation ? 'green' : store.isEqualStations(s, inMapStation) ? 'red' : 'blue',
+                    color: isOtherStation ? DujppColors.secondary : store.isEqualStations(s, inMapStation) ? DujppColors.error : DujppColors.primary,
                     onClick: (s: Station | undefined) => {
                       if (!isOtherStation) {
                         setInMapStation(s);
@@ -134,6 +135,8 @@ const ChooseTimetablePage = observer(() => {
                       left: 16,
                       zIndex: 1000,
                       backgroundColor: 'primary.main',
+                      color: 'primary.contrastText',
+                      '&:hover': {backgroundColor: DujppColors.primary + 'BB'},
                     }}
                 >
                   <ArrowBackIcon/>
@@ -187,7 +190,8 @@ const StationChooser = ({label, onChange, options, onMap, value, showMapButton, 
         <IconButton onClick={onMap ?? (() => {
         })} sx={{
           backgroundColor: 'primary.main',
-          color: 'primary.text',
+          color: 'primary.contrastText',
+          '&:hover': {backgroundColor: DujppColors.primary + 'BB'},
         }}><MapIcon/></IconButton>
     }
   </Stack>

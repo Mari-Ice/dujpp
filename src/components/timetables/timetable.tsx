@@ -7,6 +7,7 @@ import TimelineDot from '@mui/lab/TimelineDot';
 import {Box, Typography, Stack,} from '@mui/material';
 import {observer} from "mobx-react-lite";
 import type {RunDetail} from "../../types/stations.ts";
+import {timelineItemClasses} from "@mui/lab";
 
 interface TimetableProps {
   runDetail: RunDetail;
@@ -20,39 +21,45 @@ const Timetable = observer(({runDetail, startStationId, endStationId, getStation
   const endStationIndx = runDetail.stops.findIndex(s => s.stationId === endStationId);
 
   return (
-      <Box id="timetable-detail-description">
+      <Box id="timetable-detail-description" sx={{maxWidth: '100%', margin: 'auto'}}>
         <Timeline sx={{
           p: 0,
-          m: 0
+          m: 0,
+          [`& .${timelineItemClasses.root}:before`]: {
+            flex: 0,
+            padding: 0,
+          },
         }}>
           {runDetail.stops.map((stop, index) => {
             const isFirst = index === 0;
             const isLast = index === runDetail.stops.length - 1;
             const stationLabel = getStationLabel(stop.stationId);
             const isColored = index >= startStationIndx && index <= endStationIndx;
+            const isStartOrEnd = index === startStationIndx || index === endStationIndx;
             return (
                 <TimelineItem key={stop.stationId + stop.time}>
                   <TimelineSeparator>
                     <TimelineDot
-                        variant={isFirst || isLast ? 'filled' : 'outlined'}
-                        color={isColored ? 'primary' : 'grey'}
+                        variant={isStartOrEnd || isFirst || isLast ? 'filled' : 'outlined'}
+                        color={isColored ? isStartOrEnd ? 'secondary' : 'primary' : 'grey'}
                     />
                     {!isLast && <TimelineConnector/>}
                   </TimelineSeparator>
 
-                  <TimelineContent sx={{py: '12px', px: 2}}>
+                  <TimelineContent sx={{py: '7px', px: 2}}>
                     <Stack direction="row" justifyContent="space-between" alignItems="center">
                       <Typography
                           variant="body1"
-                          fontWeight={isFirst || isLast ? 'bold' : 'regular'}
+                          fontWeight={isStartOrEnd ? 'bold' : 'regular'}
                       >
                         {stationLabel}
                       </Typography>
 
                       <Typography
                           variant="body1"
-                          color={isFirst || isLast ? 'primary.dark' : 'text.secondary'}
-                          fontWeight="medium"
+                          color={isStartOrEnd ? 'secondary' : 'text.primary'}
+                          fontWeight={isStartOrEnd ? 'bold' : "medium"}
+                          marginLeft={'20px'}
                       >
                         {stop.time}
                       </Typography>

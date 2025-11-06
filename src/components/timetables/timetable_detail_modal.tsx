@@ -1,4 +1,4 @@
-import { Box, Typography, Modal, Stack, Divider, IconButton, styled } from '@mui/material';
+import { Box, Typography, Modal, Divider, IconButton, styled } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import type {RunDetail} from "../../types/stations.ts";
 import {useAppStore} from "../../main.tsx";
@@ -47,7 +47,7 @@ const TimetableDetailModal = ({ open, handleClose, runDetail }: TimetableDetailM
           aria-describedby="timetable-detail-description"
           sx={{maxWidth: '80vw', margin: 'auto', maxHeight: '90vh', overflow: 'hidden'}}
       >
-        <ModalContent sx={{ padding: '20px', '&:focus': { outline: 'none' }, paddingTop: '40px',}}>
+        <ModalContent sx={{ padding: '20px', '&:focus': { outline: 'none' }, paddingTop: '40px'}}>
           <IconButton
               onClick={handleClose}
               sx={{ position: 'absolute', top: 8, right: 8 }}
@@ -58,21 +58,17 @@ const TimetableDetailModal = ({ open, handleClose, runDetail }: TimetableDetailM
           <Typography id="timetable-detail-title" variant="h5" component="h2" sx={{ mb: 1 }}>
             {runDetail.lineName}
           </Typography>
-          <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography variant="body2" sx={{ mb: 2 }}>
             {t('operatedBy')}: {runDetail.companyName}
           </Typography>
           <Divider sx={{ mb: 2 }} />
 
-          <Box sx={{overflowY: 'auto', width: '100%'}}>
-            <Stack id="timetable-detail-description" gap={1}>
-              <Typography variant="h6" sx={{ mb: 1 }}>
-                {/*{t('tripStops')}*/}
-              </Typography>
+          <Box sx={{overflowY: 'auto', width: '90%', margin: 'auto'}}>
               <Timetable runDetail={runDetail} startStationId={store.startStation.id ?? ''} endStationId={store.endStation.id} getStationLabel={(id) => store.getStationLabel(id) ?? ''}/>
-            </Stack>
           </Box>
           <DButton label={t('buyTicket')} onClick={() => {
             store?.setOpenModal(undefined);
+            appStore.makePaymentStore();
             navigate(store?.buildRouteForPaymentPage(runDetail.runId));
           }} />
         </ModalContent>

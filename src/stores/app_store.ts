@@ -13,11 +13,19 @@ export class AppStore {
   faresStore?: FaresStore;
   locationStore?: LocationStore;
   paymentStore?: PaymentStore;
+  // _clientSecret?: string;
 
   constructor() {
     makeAutoObservable(this);
     this.locationStore = new LocationStore(this.t);
     this.faresStore = new FaresStore(this.t, this);
+    // this.initializeStripeSecret();
+  }
+
+  makePaymentStore() {
+    if (this.paymentStore) {
+      this.paymentStore = undefined;
+    }
     this.paymentStore = new PaymentStore(this.t);
   }
 
@@ -82,5 +90,13 @@ export class AppStore {
   get navigateBack() {
     return this._navigateBack;
   }
+  //
+  // async initializeStripeSecret() {
+  //   this._clientSecret = await fetch('/api/create-checkout-session', {method: 'POST'}).then(res => res.json()).then(data => data.clientSecret);
+  // }
+  //
+  // get clientSecret() {
+  //   return this._clientSecret;
+  // }
 
 }
