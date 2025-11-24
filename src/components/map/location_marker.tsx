@@ -4,7 +4,7 @@ import L, {LatLng} from 'leaflet';
 import {useAppStore} from "../../main.tsx";
 import {observer} from "mobx-react-lite";
 
-const userIcon = new L.Icon({
+export const userIcon = new L.Icon({
   iconUrl: 'https://cdn-icons-png.flaticon.com/512/3253/3253238.png',
   iconSize: [25, 25],
   iconAnchor: [12.5, 12.5], // Point the bottom center to the actual location
@@ -55,11 +55,24 @@ const LocationMarker = observer(() => {
       }
   }, [store.showMap, map, store.position]);
 
+  useEffect(() => {
+    if (!store.recenter || !store.position) return;
+    const center = map.getCenter();
+    if (center.lat === store.position.lat && center.lng === store.position.lng) return;
+    map.flyTo(store.position, 14, {duration: 0.5, animate: true});
+  }, [store.recenter]);
+
+  useEffect(() => {
+    if (store.getBounds) {
+      store.mapBounds = map.getBounds();
+    }
+  }, [store.getBounds])
+
 
   return store.position === null || store.position === undefined ? null : (
       <>
         <Marker position={store.position} icon={userIcon}>
-          <Popup>You are here (within {store.accuracy ? Math.round(store.accuracy) : 0} meters)</Popup>
+          <Popup>{store.t('youAreHere')}</Popup>
         </Marker>
       </>
   );

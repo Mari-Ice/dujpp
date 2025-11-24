@@ -25,7 +25,7 @@ const Header = observer(() => {
           <Typography variant={'h4'} onClick={() => navigate(buildRoute(AppRoutes.HOME, undefined, {[ParamKeys.LANGUAGE]: store.language}))} sx={{cursor: 'pointer'}}>
             <img src={'/dujpp_neg.svg'} alt={'Dujpp'} style={{width: '80px', margin: '10px'}}/>
           </Typography>
-          <Select labelId="label" id="select" value={store.language}
+          <Select labelId="name" id="select" value={store.language}
                   renderValue={(v) =>
                       <Stack direction={'row'} gap={'10px'} alignItems={'center'}>
                         {languageToFlag(v)}

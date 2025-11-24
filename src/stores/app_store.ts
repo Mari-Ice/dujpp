@@ -3,6 +3,7 @@ import {isLanguage, type Language, type TranslationKey, translations} from "../t
 import {FaresStore} from "./fares_store.ts";
 import {LocationStore} from "./location_store.ts";
 import {PaymentStore} from "./payment_store.ts";
+import {ApiDujpp} from "../api/api_dujpp.ts";
 
 export class AppStore {
   dialog?: any;
@@ -13,11 +14,13 @@ export class AppStore {
   faresStore?: FaresStore;
   locationStore?: LocationStore;
   paymentStore?: PaymentStore;
+  api?: ApiDujpp;
   // _clientSecret?: string;
 
-  constructor() {
+  constructor(apiBaseUrl?: string) {
     makeAutoObservable(this);
-    this.locationStore = new LocationStore(this.t);
+    this.api = new ApiDujpp(apiBaseUrl);
+    this.locationStore = new LocationStore(this.t, this.api);
     this.faresStore = new FaresStore(this.t, this);
     // this.initializeStripeSecret();
   }

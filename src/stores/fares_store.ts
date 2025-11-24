@@ -123,7 +123,7 @@ export class FaresStore {
 
   getStationLabel(stationId: string) {
     const filtered = this._stations.filter(station => station.id === stationId);
-    return filtered.length > 0 ? filtered[0].label : undefined;
+    return filtered.length > 0 ? filtered[0].name : undefined;
   }
 
   buildRouteForPaymentPage(routeId: string) {

@@ -1,47 +1,47 @@
 export interface Station {
-  label: string;
-  lat: number;
-  lng: number;
+  name: string;
+  latitude: number;
+  longitude: number;
   id: string;
 }
 
 export type Stations = Station[];
 
 export const mockStations: Stations = [
-  { label: 'Ljubljana', lat: 46.0569, lng: 14.5058, id: 'ab' },
-  { label: 'Maribor', lat: 46.5547, lng: 15.6459, id: 'ac' },
-  { label: 'Celje', lat: 46.2333, lng: 15.2636, id: 'ad' },
-  { label: 'Koper', lat: 45.5469, lng: 13.7294, id: 'ae' },
-  { label: 'Kranj', lat: 46.2415, lng: 14.3556, id: 'af' },
-  { label: 'Novo mesto', lat: 45.8033, lng: 15.1689, id: 'ag' },
-  { label: 'Velenje', lat: 46.3934, lng: 15.1189, id: 'ah' },
-  { label: 'Murska Sobota', lat: 46.6548, lng: 16.1627, id: 'ai' },
-  { label: 'Jesenice', lat: 46.4357, lng: 13.9317, id: 'aj' },
-  { label: 'Nova Gorica', lat: 45.9554, lng: 13.6414, id: 'ak' },
-  { label: 'Postojna', lat: 45.7824, lng: 14.2127, id: 'al' },
-  { label: 'Ptuj', lat: 46.4208, lng: 15.8677, id: 'am' },
-  { label: 'Slovenj Gradec', lat: 46.5085, lng: 15.0801, id: 'an' },
-  { label: 'Trbovlje', lat: 46.1557, lng: 15.0506, id: 'ao' },
-  { label: 'Domžale', lat: 46.1384, lng: 14.5901, id: 'ap' },
-  { label: 'Kamnik', lat: 46.2236, lng: 14.6111, id: 'ar' },
-  { label: 'Škofja Loka', lat: 46.1666, lng: 14.3057, id: 'as' },
-  { label: 'Izola', lat: 45.5457, lng: 13.6668, id: 'at' },
-  { label: 'Piran', lat: 45.5280, lng: 13.5670, id: 'au' },
-  { label: 'Bled', lat: 46.3683, lng: 14.1130, id: 'av' },
-  { label: 'Bohinjska Bistrica', lat: 46.2690, lng: 13.9574, id: 'az' },
-  { label: 'Kočevje', lat: 45.6429, lng: 14.8596, id: 'ax' },
-  { label: 'Brežice', lat: 45.9080, lng: 15.6022, id: 'ay' },
-  { label: 'Grosuplje', lat: 45.9575, lng: 14.6547, id: 'aq' },
-  { label: 'Ajdovščina', lat: 45.8890, lng: 13.8860, id: 'aw' },
-  { label: 'Metlika', lat: 45.6549, lng: 15.3180, id: 'aa' },
-  { label: 'Sežana', lat: 45.7077, lng: 13.8643, id: 'aab' },
-  { label: 'Dravograd', lat: 46.5833, lng: 15.0180, id: 'aac' },
-  { label: 'Zidani Most', lat: 46.0820, lng: 15.1550, id: 'aad' },
-  { label: 'Hrastnik', lat: 46.1408, lng: 15.2281, id: 'aae' },
-  { label: 'Litija', lat: 46.0645, lng: 14.8219, id: 'aaf' },
-  { label: 'Žalec', lat: 46.2536, lng: 15.1556, id: 'aag' },
-  { label: 'Lenart', lat: 46.5684, lng: 15.8202, id: 'aah' },
-  { label: 'Gornja Radgona', lat: 46.6853, lng: 15.9922, id: 'aai' },
+  { name: 'Ljubljana', latitude: 46.0569, longitude: 14.5058, id: 'ab' },
+  { name: 'Maribor', latitude: 46.5547, longitude: 15.6459, id: 'ac' },
+  { name: 'Celje', latitude: 46.2333, longitude: 15.2636, id: 'ad' },
+  { name: 'Koper', latitude: 45.5469, longitude: 13.7294, id: 'ae' },
+  { name: 'Kranj', latitude: 46.2415, longitude: 14.3556, id: 'af' },
+  { name: 'Novo mesto', latitude: 45.8033, longitude: 15.1689, id: 'ag' },
+  { name: 'Velenje', latitude: 46.3934, longitude: 15.1189, id: 'ah' },
+  { name: 'Murska Sobota', latitude: 46.6548, longitude: 16.1627, id: 'ai' },
+  { name: 'Jesenice', latitude: 46.4357, longitude: 13.9317, id: 'aj' },
+  { name: 'Nova Gorica', latitude: 45.9554, longitude: 13.6414, id: 'ak' },
+  { name: 'Postojna', latitude: 45.7824, longitude: 14.2127, id: 'al' },
+  { name: 'Ptuj', latitude: 46.4208, longitude: 15.8677, id: 'am' },
+  { name: 'Slovenj Gradec', latitude: 46.5085, longitude: 15.0801, id: 'an' },
+  { name: 'Trbovlje', latitude: 46.1557, longitude: 15.0506, id: 'ao' },
+  { name: 'Domžale', latitude: 46.1384, longitude: 14.5901, id: 'ap' },
+  { name: 'Kamnik', latitude: 46.2236, longitude: 14.6111, id: 'ar' },
+  { name: 'Škofja Loka', latitude: 46.1666, longitude: 14.3057, id: 'as' },
+  { name: 'Izola', latitude: 45.5457, longitude: 13.6668, id: 'at' },
+  { name: 'Piran', latitude: 45.5280, longitude: 13.5670, id: 'au' },
+  { name: 'Bled', latitude: 46.3683, longitude: 14.1130, id: 'av' },
+  { name: 'Bohinjska Bistrica', latitude: 46.2690, longitude: 13.9574, id: 'az' },
+  { name: 'Kočevje', latitude: 45.6429, longitude: 14.8596, id: 'ax' },
+  { name: 'Brežice', latitude: 45.9080, longitude: 15.6022, id: 'ay' },
+  { name: 'Grosuplje', latitude: 45.9575, longitude: 14.6547, id: 'aq' },
+  { name: 'Ajdovščina', latitude: 45.8890, longitude: 13.8860, id: 'aw' },
+  { name: 'Metlika', latitude: 45.6549, longitude: 15.3180, id: 'aa' },
+  { name: 'Sežana', latitude: 45.7077, longitude: 13.8643, id: 'aab' },
+  { name: 'Dravograd', latitude: 46.5833, longitude: 15.0180, id: 'aac' },
+  { name: 'Zidani Most', latitude: 46.0820, longitude: 15.1550, id: 'aad' },
+  { name: 'Hrastnik', latitude: 46.1408, longitude: 15.2281, id: 'aae' },
+  { name: 'Litija', latitude: 46.0645, longitude: 14.8219, id: 'aaf' },
+  { name: 'Žalec', latitude: 46.2536, longitude: 15.1556, id: 'aag' },
+  { name: 'Lenart', latitude: 46.5684, longitude: 15.8202, id: 'aah' },
+  { name: 'Gornja Radgona', latitude: 46.6853, longitude: 15.9922, id: 'aai' },
 ];
 
 export interface StationStopDetails {

@@ -17,7 +17,12 @@ configure({
   enforceActions: "never",
 })
 // const stripePromise = loadStripe("pk_test_51SKfP1EJGJYBk0kgU3RkwwwaOsdCcWp1ldN606Rz43GHRwkHxAogHFjQBibaId3qb9gloEChtgoVsOMlpaLjU3JL00QXvH7JpO");
-export const appStore = new AppStore();
+
+const baseURL = window.location.hostname;
+const apiBaseUrl = window.location.hostname.includes('localhost') ? 'http://10.32.25.198:8000/' : `https://${baseURL}/api/v1/`;
+
+export const appStore = new AppStore(apiBaseUrl);
+console.log(apiBaseUrl);
 export const AppStoreContext = createContext<AppStore>(appStore);
 export const useAppStore = (): AppStore => {
   const context = useContext(AppStoreContext);

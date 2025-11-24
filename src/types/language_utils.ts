@@ -12,7 +12,7 @@ export const translations = {
     timetable: 'Show timetable',
     confirmLocation: 'Confirm location',
     userLocationError: 'Location access denied.',
-    chooseStation: 'Where are you going?',
+    chooseStation: 'Where are you traveling to?',
     dateError: 'Choose a valid date.',
     noStartStation: 'No start station selected.',
     noEndStation: 'No end station selected.',
@@ -47,6 +47,7 @@ export const translations = {
     download: 'Download',
     share: 'Share',
     proceedToPayment: 'Proceed to Payment',
+    youAreHere: 'You are here.',
   },
   'sl': {
     appName: 'Dujpp',
@@ -94,6 +95,7 @@ export const translations = {
     download: 'Prenesi',
     share: 'Deli',
     proceedToPayment: 'Nadaljuj na plačilo',
+    youAreHere: 'Tukaj ste.',
   },
 
 };

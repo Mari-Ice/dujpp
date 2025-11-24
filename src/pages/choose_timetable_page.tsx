@@ -14,6 +14,8 @@ import {useNavigate} from "react-router-dom";
 import Body from "../components/common/body.tsx";
 import {AppRoutes, buildRoute, ParamKeys} from "../types/route_utils.tsx";
 import {DujppColors} from "../theme.tsx";
+import MyLocationRoundedIcon from '@mui/icons-material/MyLocationRounded';
+import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 
 const ChooseTimetablePage = observer(() => {
   const appStore = useAppStore();
@@ -27,10 +29,10 @@ const ChooseTimetablePage = observer(() => {
 
   if (store.showMapBool) {
     if (storeOtherStation) {
-      polyline.push({lat: storeOtherStation.lat, lng: storeOtherStation.lng});
+      polyline.push({lat: storeOtherStation.latitude, lng: storeOtherStation.longitude});
     }
     if (inMapStation) {
-      polyline.push({lat: inMapStation.lat, lng: inMapStation.lng});
+      polyline.push({lat: inMapStation.latitude, lng: inMapStation.longitude});
     }
   }
   return (
@@ -57,14 +59,14 @@ const ChooseTimetablePage = observer(() => {
               store.errors(newError?.toString() ?? undefined, 'date')
             }} onChange={(e) => store.setDate(e?.startOf('day'))} value={store.date}/>
             <StationChooser label={t('startStation')} onChange={v => store.setStartStation(v)}
-                            options={store.mockStations}
+                            options={store.departureStations}
                             onMap={() => {
                               store.showMap = 'start';
                               setInMapStation(store.startStation);
                             }} value={store.startStation} showMapButton={true} error={store.getError('startStation')}/>
             <StationChooser label={t('endStation')} onChange={v => store.setEndStation(v)}
-                            options={store.mockStations} onMap={() => {
-              store.showMap = 'end';
+                            options={store.arrivalStations()} onMap={() => {
+              store.showMap = 'stop';
               setInMapStation(store.endStation);
             }} value={store.endStation}
                             showMapButton={true} error={store.getError('endStation')}/>
@@ -113,7 +115,7 @@ const ChooseTimetablePage = observer(() => {
               borderTopRightRadius: '20px', backgroundColor: 'blue',
             }}>
               <Box sx={{position: 'relative'}}>
-                <MapPage markers={store.mockStations.map(s => {
+                <MapPage markers={store.stations.map(s => {
                   const isOtherStation = storeOtherStation !== undefined && store.isEqualStations(s, storeOtherStation);
                   return {
                     station: s,
@@ -142,7 +144,39 @@ const ChooseTimetablePage = observer(() => {
                   <ArrowBackIcon/>
                 </IconButton>
               </Box>;
-
+              <Stack sx={{
+                position: 'absolute',
+                right: '2%',
+                bottom: 0,
+                height: '50%',
+                justifyContent: 'center',
+                zIndex: 1000,
+              }}>
+                <IconButton
+                    onClick={() => {store.recenterMap()}}
+                    aria-label="back"
+                    sx={{
+                      backgroundColor: 'primary.main',
+                      color: 'primary.contrastText',
+                      '&:hover': {backgroundColor: DujppColors.primary + 'BB'},
+                      '&:focus': {backgroundColor: DujppColors.primary},
+                      margin: '10px',
+                    }}
+                ><MyLocationRoundedIcon />
+                </IconButton>
+                <IconButton
+                    onClick={() => {store.getStationsNearMapCenter()}}
+                    aria-label="back"
+                    sx={{
+                      backgroundColor: 'primary.main',
+                      color: 'primary.contrastText',
+                      '&:hover': {backgroundColor: DujppColors.primary + 'BB'},
+                      '&:focus': {backgroundColor: DujppColors.primary},
+                      margin: '10px',
+                    }}
+                ><AutorenewRoundedIcon />
+                </IconButton>
+              </Stack>
               <Button
                   aria-label="back"
                   onClick={() => {
@@ -150,18 +184,20 @@ const ChooseTimetablePage = observer(() => {
                     setInMapStation(undefined);
                     store.showMap = undefined;
                   }}
-                  color={'primary'}
-                  variant={'contained'}
                   sx={{
                     position: 'absolute',
                     bottom: '5%',
                     width: '50%',
                     left: '25%',
+                    alignItems: 'end',
                     zIndex: 1000,
                   }}
+                  color={'primary'}
+                  variant={'contained'}
               >
                 {t('confirmLocation')}
               </Button>
+
             </Box>
           </Box>
 
@@ -185,13 +221,15 @@ interface StationChooserProps {
 const StationChooser = ({label, onChange, options, onMap, value, showMapButton, error}: StationChooserProps) => {
   return <Stack direction={'row'} gap={'10px'} width={'100%'} alignItems={'center'}
                 sx={{justifyContent: 'space-between'}}>
-    <DAutocomplete options={options} label={label} onChange={onChange} value={value} error={error}/>
+    <DAutocomplete options={options} label={label} onChange={onChange} value={value} error={error} getOptionLabel={(o) => o.name}/>
     {showMapButton &&
         <IconButton onClick={onMap ?? (() => {
         })} sx={{
           backgroundColor: 'primary.main',
           color: 'primary.contrastText',
           '&:hover': {backgroundColor: DujppColors.primary + 'BB'},
+          marginTop: !!error ? '5px' : 0,
+          alignSelf: !!error ? 'flex-start' : 'center',
         }}><MapIcon/></IconButton>
     }
   </Stack>

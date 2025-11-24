@@ -67,7 +67,7 @@ export class PaymentStore {
     if (station.length == 0 || (timeStop?.length ?? 0) == 0) return undefined;
     return {
       id: this._startStationId!,
-      label: station[0].label,
+      label: station[0].name,
       time: timeStop![0].time,
       runId: this._runDetails?.runId ?? '',
     };
@@ -78,7 +78,7 @@ export class PaymentStore {
     if (station.length == 0 || (timeStop?.length ?? 0) == 0) return undefined;
     return {
       id: this._endStationId!,
-      label: station[0].label,
+      label: station[0].name,
       time: timeStop![0].time,
       runId: this._runDetails?.runId ?? '',
     };
