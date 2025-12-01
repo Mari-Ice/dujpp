@@ -27,14 +27,14 @@ const ChooseTimetablePage = observer(() => {
   const polyline = [];
   const storeOtherStation = store.showMap === 'start' ? store.endStation : store.startStation;
 
-  if (store.showMapBool) {
-    if (storeOtherStation) {
-      polyline.push({lat: storeOtherStation.latitude, lng: storeOtherStation.longitude});
-    }
-    if (inMapStation) {
-      polyline.push({lat: inMapStation.latitude, lng: inMapStation.longitude});
-    }
-  }
+  // if (store.showMapBool) {
+  //   if (storeOtherStation) {
+  //     polyline.push({lat: storeOtherStation.latitude, lng: storeOtherStation.longitude});
+  //   }
+  //   if (inMapStation) {
+  //     polyline.push({lat: inMapStation.latitude, lng: inMapStation.longitude});
+  //   }
+  // }
   return (
       <Body>
         <Stack sx={{
@@ -65,7 +65,7 @@ const ChooseTimetablePage = observer(() => {
                               setInMapStation(store.startStation);
                             }} value={store.startStation} showMapButton={true} error={store.getError('startStation')}/>
             <StationChooser label={t('endStation')} onChange={v => store.setEndStation(v)}
-                            options={store.arrivalStations()} onMap={() => {
+                            options={store.arrivalStations} onMap={() => {
               store.showMap = 'stop';
               setInMapStation(store.endStation);
             }} value={store.endStation}
@@ -82,7 +82,8 @@ const ChooseTimetablePage = observer(() => {
                 [ParamKeys.TIME_FROM]: store.date!.toDate().toISOString(),
               }, {[ParamKeys.LANGUAGE]: appStore.language,}));
             }
-          }}/>
+          }}
+          />
 
         </Stack>
         <Slide
@@ -108,7 +109,7 @@ const ChooseTimetablePage = observer(() => {
             <Box sx={{padding: '30px',}}>
               <StationChooser label={t(store.showMap == 'start' ? 'startStation' : 'endStation')}
                               onChange={v => setInMapStation(v)}
-                              options={store.mockStations} value={inMapStation} showMapButton={false}/>
+                              options={store.stations} value={inMapStation} showMapButton={false}/>
             </Box>
             <Box sx={{
               overflow: 'hidden', position: 'relative', borderTopLeftRadius: '20px', height: 'calc(100% - 100px)',

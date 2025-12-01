@@ -3,10 +3,12 @@ import type {TranslationKey} from "../types/language_utils.ts";
 import {AppRoutes, buildRoute, ParamKeys} from "../types/route_utils.tsx";
 import dayjs from "dayjs";
 import type {PickerValue} from "@mui/x-date-pickers/internals";
-import {fetchTimetables, mockStations, type RunDetail, type TimetableQuery} from "../types/stations.ts";
+import {mockStations} from "../types/stations.ts";
 import type {AppStore} from "./app_store.ts";
+import type {ApiDujpp, Trip} from "../api/api_dujpp.ts";
 
 export class FaresStore {
+  api: ApiDujpp;
   t: (key: TranslationKey) => string;
   _timeFrom?: PickerValue | undefined;
   _timeTo?: PickerValue | undefined;
@@ -16,17 +18,18 @@ export class FaresStore {
   _initialized = false;
   _validStations = true;
   _stations: any[] = [];
-  _timetables: any[] = [];
+  _timetables: Trip[] = [];
   _loading = false;
-  _openTimetableRun?: RunDetail;
+  _openTimetableRun?: Trip;
   _appStore?: any;
 
 
-  constructor(t: (key: TranslationKey) => string, appStore?: AppStore) {
+  constructor(t: (key: TranslationKey) => string, api: ApiDujpp, appStore?: AppStore, ) {
     makeAutoObservable(this);
     this.t = t;
     this._stations = mockStations;
     this._appStore = appStore;
+    this.api = api;
   }
 
   setupParams(searchParams: URLSearchParams): boolean {
@@ -87,17 +90,7 @@ export class FaresStore {
     if (!this._startStationId || !this._endStationId) return;
     if (this._loading) return;
     this._loading = true;
-    const query: TimetableQuery = {
-      startId: this._startStationId!, // Ljubljana
-      endId: this._endStationId!,   // Maribor
-      timeFrom: this._timeFrom ? dayjs(this._timeFrom).format('HH:mm') : undefined,
-      timeTo: this._timeTo ? dayjs(this._timeTo).format('HH:mm') : undefined,
-    };
-
-    try {
-      this._timetables = await fetchTimetables(query);
-    } catch (error) {
-    }
+    this._timetables = await this.api.getTrips(this._startStationId, this._endStationId, this._timeFrom, this._timeTo);
     this._loading = false;
   }
 
@@ -113,8 +106,8 @@ export class FaresStore {
     return this._openTimetableRun !== undefined;
   }
 
-  setOpenModal(run?: RunDetail) {
-    this._openTimetableRun = run;
+  setOpenModal(trip?: Trip) {
+    this._openTimetableRun = trip;
   }
 
   get openTimetableRun() {

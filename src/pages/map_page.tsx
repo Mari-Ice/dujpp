@@ -1,10 +1,13 @@
 import {MapContainer, TileLayer, Marker, Polyline, Popup} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import {observer} from "mobx-react-lite";
 import LocationMarker from "../components/map/location_marker.tsx";
 import L from "leaflet";
 import type {Station} from "../types/stations.ts";
 import {DujppColors} from "../theme.tsx";
+import MarkerClusterGroup from "react-leaflet-markercluster";
 
 export interface Position {
   lat: number;
@@ -32,11 +35,21 @@ const MapPage = observer(({center, polylineCoordinates, markers, initialZoom}: M
             url="https://mt3.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&scale=2"
         />
 
-        {polylineCoordinates &&
-            <Polyline positions={polylineCoordinates.map((p) => [p.lat, p.lng])} color="blue" weight={5}/>}
-        {markers && markers.map((marker, index) => (
-            <MarkerIcon key={index} itemKey={index} lat={marker.station.lat} lng={marker.station.lng} markerInfo={marker.station.label} station={marker.station} onClick={marker.onClick} color={marker.color}/>
-        ))}
+        {/*{polylineCoordinates &&*/}
+        {/*    <Polyline positions={polylineCoordinates.map((p) => [p.lat, p.lng])} color="blue" weight={5}/>}*/}
+        {markers &&
+            <MarkerClusterGroup
+            disableClusteringAtZoom={15}
+            >
+            {
+              markers.map((marker, index) => (
+                  <MarkerIcon key={index} itemKey={index} lat={marker.station.latitude} lng={marker.station.longitude}
+                              markerInfo={marker.station.name} station={marker.station} onClick={marker.onClick}
+                              color={marker.color}/>
+              ))
+            }
+            </MarkerClusterGroup>
+        }
         <LocationMarker/>
       </MapContainer>
   );

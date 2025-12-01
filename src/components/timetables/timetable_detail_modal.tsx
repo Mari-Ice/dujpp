@@ -5,6 +5,7 @@ import {useAppStore} from "../../main.tsx";
 import Timetable from "./timetable.tsx";
 import DButton from "../fields_buttons/dbutton.tsx";
 import {useNavigate} from "react-router-dom";
+import type {Trip} from "../../api/api_dujpp.ts";
 
 
 // Style for the modal content box
@@ -29,10 +30,10 @@ const ModalContent = styled(Box)(({ theme }) => ({
 interface TimetableDetailModalProps {
   open: boolean;
   handleClose: () => void;
-  runDetail: RunDetail;
+  trip: Trip;
 }
 
-const TimetableDetailModal = ({ open, handleClose, runDetail }: TimetableDetailModalProps) => {
+const TimetableDetailModal = ({ open, handleClose, trip }: TimetableDetailModalProps) => {
   const appStore = useAppStore(); // Assuming appStore is available here for station lookups
   const t = appStore.t;
   const store = appStore.faresStore;
@@ -56,20 +57,20 @@ const TimetableDetailModal = ({ open, handleClose, runDetail }: TimetableDetailM
           </IconButton>
 
           <Typography id="timetable-detail-title" variant="h5" component="h2" sx={{ mb: 1 }}>
-            {runDetail.lineName}
+            {/*{trip.lineName}*/}
           </Typography>
           <Typography variant="body2" sx={{ mb: 2 }}>
-            {t('operatedBy')}: {runDetail.companyName}
+            {/*{t('operatedBy')}: {runDetail.companyName}*/}
           </Typography>
           <Divider sx={{ mb: 2 }} />
 
           <Box sx={{overflowY: 'auto', width: '90%', margin: 'auto'}}>
-              <Timetable runDetail={runDetail} startStationId={store.startStation.id ?? ''} endStationId={store.endStation.id} getStationLabel={(id) => store.getStationLabel(id) ?? ''}/>
+              {/*<Timetable runDetail={runDetail} startStationId={store.startStation.id ?? ''} endStationId={store.endStation.id} getStationLabel={(id) => store.getStationLabel(id) ?? ''}/>*/}
           </Box>
           <DButton label={t('buyTicket')} onClick={() => {
             store?.setOpenModal(undefined);
             appStore.makePaymentStore();
-            navigate(store?.buildRouteForPaymentPage(runDetail.runId));
+            // navigate(store?.buildRouteForPaymentPage(runDetail.runId));
           }} />
         </ModalContent>
       </Modal>

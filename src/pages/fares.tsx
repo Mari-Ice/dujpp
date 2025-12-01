@@ -73,7 +73,7 @@ const Fares = observer(() => {
                     cancelButtonLabel: store.t('cancelButton'),
                     nextStepButtonLabel: store.t('nextButton'),
                   }} value={store.timeTo} onChange={(e) => store.setTimeFrom(e)} format={t('dateTimeFormat')}
-                                        label={t('arrivalTime')}
+                                        label={t('departureTimeTo')}
                   />
                 </AccordionDetails>
               </Accordion>
@@ -99,7 +99,7 @@ const Fares = observer(() => {
             </Stack>
         }
         {store.openModal &&
-            <TimetableDetailModal open={store.openModal} runDetail={store.openTimetableRun!} handleClose={() => {
+            <TimetableDetailModal open={store.openModal} trip={store.openTimetableRun!} handleClose={() => {
               store?.setOpenModal(undefined)
             }}/>
         }

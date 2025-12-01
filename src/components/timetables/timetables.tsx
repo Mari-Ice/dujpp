@@ -1,13 +1,73 @@
 import {observer} from "mobx-react-lite";
 import {Stack, Card, Typography, Box} from "@mui/material";
-import type {RunDetail} from "../../types/stations.ts";
 import {useAppStore} from "../../main.tsx";
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import type {Trip} from "../../api/api_dujpp.ts";
+import dayjs from "dayjs";
 
 interface TimetableProps {
-  timetables: RunDetail[];
-  onSelectedRun: (run: RunDetail) => void;
+  timetables: Trip[];
+  onSelectedRun: (trip: Trip) => void;
 }
+
+function getStartStationLabel(trip: Trip) {
+  if (trip.legs.length === 0) return '';
+  for (const leg of trip.legs) {
+    if (!!leg.authority) {
+      return leg.from.name;
+    }
+  }
+  return trip.legs[0].from.name;
+}
+function getEndStationLabel(trip: Trip) {
+  if (trip.legs.length === 0) return '';
+  for (let i = trip.legs.length - 1; i >= 0; i--) {
+    if (!!trip.legs[i].authority) {
+      return trip.legs[i].to.name;
+    }
+  }
+  return trip.legs[trip.legs.length - 1].to.name;
+}
+
+function getStartStationTime(trip: Trip, t: any) {
+  if (trip.legs.length === 0) return '';
+  for (const leg of trip.legs) {
+    if (!!leg.authority) {
+      return dayjs(leg.startTime).format(t('timeFormat'));
+    }
+  }
+  return dayjs(trip.legs[0].startTime).format(t('timeFormat'));
+}
+
+function getEndStationTime(trip: Trip, t: any) {
+  if (trip.legs.length === 0) return '';
+  for (let i = trip.legs.length - 1; i >= 0; i--) {
+    if (!!trip.legs[i].authority) {
+      return dayjs(trip.legs[i].endTime).format(t('timeFormat'));
+    }
+  }
+  return dayjs(trip.legs[trip.legs.length - 1].endTime).format(t('timeFormat'));
+}
+
+function getTripOrganisation(trip: Trip) {
+  if (trip.legs.length === 0) return '';
+  for (const leg of trip.legs) {
+    if (!!leg.authority) {
+      return leg.authority;
+    }
+  }
+  return trip.legs[0].authority;
+}
+function getTripLine(trip: Trip) {
+  if (trip.legs.length === 0) return '';
+  for (const leg of trip.legs) {
+    if (!!leg.line) {
+      return leg.line;
+    }
+  }
+  return '';
+}
+
 
 const Timetables = observer(({timetables, onSelectedRun}: TimetableProps) => {
   const appStore = useAppStore();
@@ -15,17 +75,12 @@ const Timetables = observer(({timetables, onSelectedRun}: TimetableProps) => {
   const store = appStore.faresStore;
   if (!store) return null;
 
-  const findStopTime = (timetable: RunDetail, stationId: string) => {
-    const stop = timetable.stops.find(s => s.stationId === stationId);
-    if (!stop) return undefined;
-    return stop.time;
-  }
   return (
       <Box sx={{height: '100%', overflowY: 'auto', padding: '10px', width: '100%',}}>
       <Stack gap={'10px'} sx={{paddingBottom: '20px', width: '100%'}}>
         {timetables.length > 0 ?
-        timetables.map((timetable: RunDetail, _) => {
-          return <Card key={timetable.lineId + timetable.companyName + timetable.runId}
+        timetables.map((timetable: Trip) => {
+          return <Card key={timetable.startTime + timetable.endTime + timetable.legs.map((v) => v.authority ?? '').toString()}
                 onClick={() => onSelectedRun(timetable)}
                 sx={{
                   padding: '5px',
@@ -41,17 +96,18 @@ const Timetables = observer(({timetables, onSelectedRun}: TimetableProps) => {
             <Stack justifyContent="space-between" alignItems="center" width={'100%'} direction={'row'}>
               <Stack  justifyContent={'space-between'} alignItems={'start'} width={'100%'}>
                 <Typography color={'textDisabled'}>{t('departure')}</Typography>
-                <Typography variant={'body2'}>{store.startStation.label}</Typography>
-                <Typography variant={'h6'}>{findStopTime(timetable, store.startStation.id)}</Typography>
+                <Typography variant={'body2'}>{getStartStationLabel(timetable)}</Typography>
+                <Typography variant={'h6'}>{getStartStationTime(timetable, t)}</Typography>
               </Stack>
               <Stack minWidth={'100px'} alignItems={'center'}>
+                <Typography variant={'body1'} fontSize={'11px'} textAlign={'center'}>{getTripOrganisation(timetable)}</Typography>
               <ArrowForwardRoundedIcon fontSize={'large'} color={'primary'}/>
-                <Typography variant={'body1'} fontSize={'11px'} textAlign={'center'}>{timetable.companyName}</Typography>
+                <Typography variant={'body1'} fontSize={'11px'} textAlign={'center'}>{getTripLine(timetable)}</Typography>
               </Stack>
               <Stack  justifyContent={'space-between'} alignItems={'end'} width={'100%'}>
                 <Typography color={'textDisabled'}>{t('arrival')}</Typography>
-                <Typography variant={'body2'}>{store.endStation.label}</Typography>
-                <Typography variant={'h6'}>{findStopTime(timetable, store.endStation.id)}</Typography>
+                <Typography variant={'body2'}>{getEndStationLabel(timetable)}</Typography>
+                <Typography variant={'h6'}>{getEndStationTime(timetable, t)}</Typography>
               </Stack>
             </Stack>
           </Card>;

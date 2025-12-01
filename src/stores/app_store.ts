@@ -21,7 +21,7 @@ export class AppStore {
     makeAutoObservable(this);
     this.api = new ApiDujpp(apiBaseUrl);
     this.locationStore = new LocationStore(this.t, this.api);
-    this.faresStore = new FaresStore(this.t, this);
+    this.faresStore = new FaresStore(this.t, this.api, this);
     // this.initializeStripeSecret();
   }
 

@@ -38,7 +38,14 @@ export class LocationStore {
   }
 
   get stations(): Station[] {
-    return [];
+    if (this.showMapBool) {
+      if (this.showMap === 'start') {
+        return this.departureStations;
+      }
+      return this.arrivalStations;
+    } else {
+      return this.departureStations.concat(this.arrivalStations);
+    }
   }
 
   get departureStations(): Station[] {
@@ -49,7 +56,7 @@ export class LocationStore {
   }
 
 
-  arrivalStations(): Station[] {
+  get arrivalStations(): Station[] {
     if (this._arrivalStations.length === 0) {
       this.refreshStations('stop', this._arrivalFilters);
     }
@@ -224,5 +231,7 @@ export class LocationStore {
     if (!this.showMapBool) return;
     this.refreshStations(this.showMap!, {...this._getFilters(), nearLocation: {latitude: center.lat, longitude: center.lng, radius: radius}});
   }
+
+
 
 }
