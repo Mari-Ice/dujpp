@@ -6,12 +6,15 @@ interface DButtonProps {
   onClick: () => void;
   disabled?: boolean;
   sx?: SxProps;
+  type?: 'submit' | 'button' | 'reset';
 }
 
-const DButton = ({label, onClick, disabled, sx}: DButtonProps) => {
+const DButton = ({label, onClick, disabled, sx, type}: DButtonProps) => {
   return (
     <Button disabled={disabled} onClick={onClick} variant={'contained'} fullWidth sx={{'&:hover': {boxShadow: 4, backgroundColor: DujppColors.primary + 'EE'},
-      ...sx}}>
+      ...sx}}
+      type={type}
+    >
       {label}
     </Button>
   );

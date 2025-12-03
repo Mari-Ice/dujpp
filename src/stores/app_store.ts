@@ -4,6 +4,7 @@ import {FaresStore} from "./fares_store.ts";
 import {LocationStore} from "./location_store.ts";
 import {PaymentStore} from "./payment_store.ts";
 import {ApiDujpp} from "../api/api_dujpp.ts";
+import {DEBUG_PAYMENT} from "../globals.ts";
 
 export class AppStore {
   dialog?: any;
@@ -22,6 +23,9 @@ export class AppStore {
     this.api = new ApiDujpp(apiBaseUrl);
     this.locationStore = new LocationStore(this.t, this.api);
     this.faresStore = new FaresStore(this.t, this.api, this);
+    if (DEBUG_PAYMENT) {
+      this.makePaymentStore();
+    }
     // this.initializeStripeSecret();
   }
 
@@ -29,7 +33,7 @@ export class AppStore {
     if (this.paymentStore) {
       this.paymentStore = undefined;
     }
-    this.paymentStore = new PaymentStore(this.t);
+    this.paymentStore = new PaymentStore(this.t, this.api!);
   }
 
   showDialog(dialog: any) {

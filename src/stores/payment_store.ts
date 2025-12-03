@@ -2,6 +2,7 @@ import type {TranslationKey} from "../types/language_utils.ts";
 import {makeAutoObservable} from "mobx";
 import {ParamKeys} from "../types/route_utils.tsx";
 import {type Trip} from "../types/stations.ts";
+import type {ApiDujpp} from "../api/api_dujpp.ts";
 
 export class PaymentStore {
   t: (key: TranslationKey) => string;
@@ -18,10 +19,12 @@ export class PaymentStore {
   _paymentSuccessful: boolean = false;
   _paymentId?: string;
   _paymentStarted: boolean = false;
+  api: ApiDujpp;
 
-  constructor(t: (key: TranslationKey) => string) {
+  constructor(t: (key: TranslationKey) => string, api: ApiDujpp) {
     makeAutoObservable(this);
     this.t = t;
+    this.api = api;
   }
 
   get initialized() {

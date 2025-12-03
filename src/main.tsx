@@ -11,13 +11,13 @@ import {AppStore} from "./stores/app_store";
 import {MultiProvider} from './utils'
 import {DujppTheme} from "./theme";
 import {LOCAL} from "./globals.ts";
-// import {EmbeddedCheckoutProvider} from '@stripe/react-stripe-js';
-// import {loadStripe} from '@stripe/stripe-js';
+import { loadStripe } from "@stripe/stripe-js";
+import { STRIPE_API_KEY } from "./globals";
 
 configure({
   enforceActions: "never",
 })
-// const stripePromise = loadStripe("pk_test_51SKfP1EJGJYBk0kgU3RkwwwaOsdCcWp1ldN606Rz43GHRwkHxAogHFjQBibaId3qb9gloEChtgoVsOMlpaLjU3JL00QXvH7JpO");
+export const stripePromise = loadStripe(STRIPE_API_KEY);
 
 const baseURL = window.location.hostname;
 const apiBaseUrl = window.location.hostname.includes('localhost') ?
@@ -40,7 +40,6 @@ createRoot(document.getElementById('root')!).render(
     <MultiProvider providers={[
       <AppStoreContext.Provider value={appStore}/>,
       <MuiThemeProvider theme={DujppTheme} />,
-        // <EmbeddedCheckoutProvider stripe={stripePromise} options={{clientSecret: appStore.clientSecret}} />
     ]}>
       <BrowserRouter>
         <App />
