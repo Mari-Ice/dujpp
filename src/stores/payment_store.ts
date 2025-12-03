@@ -1,13 +1,7 @@
 import type {TranslationKey} from "../types/language_utils.ts";
 import {makeAutoObservable} from "mobx";
 import {ParamKeys} from "../types/route_utils.tsx";
-import {
-  fetchRunDetail,
-  mockStations,
-  type RunDetail,
-  type RunDetailQuery,
-  type StationStopDetails
-} from "../types/stations.ts";
+import {type Trip} from "../types/stations.ts";
 
 export class PaymentStore {
   t: (key: TranslationKey) => string;
@@ -16,7 +10,7 @@ export class PaymentStore {
   _startStationId?: string;
   _endStationId?: string;
   _validParams = false;
-  _runDetails?: RunDetail;
+  _trip?: Trip;
   adults: number = 0;
   children714: number = 0;
   children06: number = 0;
@@ -49,40 +43,13 @@ export class PaymentStore {
   }
 
   async _fetchRouteDetails() {
-    const query: RunDetailQuery = {
-      runId: this._routeId!,
-      startId: this._startStationId!,
-      endId: this._endStationId!,
-    }
-    this._runDetails = await fetchRunDetail(query) ?? undefined;
+
   }
 
-  get runDetail() {
-    return this._runDetails;
+  get trip() {
+    return this._trip;
   }
 
-  get startStation(): StationStopDetails | undefined {
-    const station = mockStations.filter(station => station.id === this._startStationId);
-    const timeStop = this._runDetails?.stops.filter(s => s.stationId === this._startStationId);
-    if (station.length == 0 || (timeStop?.length ?? 0) == 0) return undefined;
-    return {
-      id: this._startStationId!,
-      label: station[0].name,
-      time: timeStop![0].time,
-      runId: this._runDetails?.runId ?? '',
-    };
-  }
-  get endStation(): StationStopDetails | undefined {
-    const station = mockStations.filter(station => station.id === this._endStationId);
-    const timeStop = this._runDetails?.stops.filter(s => s.stationId === this._endStationId);
-    if (station.length == 0 || (timeStop?.length ?? 0) == 0) return undefined;
-    return {
-      id: this._endStationId!,
-      label: station[0].name,
-      time: timeStop![0].time,
-      runId: this._runDetails?.runId ?? '',
-    };
-  }
 
   setAdults(count: number) {
     this.adults = count;

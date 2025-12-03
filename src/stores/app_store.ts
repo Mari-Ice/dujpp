@@ -7,7 +7,7 @@ import {ApiDujpp} from "../api/api_dujpp.ts";
 
 export class AppStore {
   dialog?: any;
-  _language: Language = 'en';
+  _language: Language = 'sl';
   _timerCounter = 0;
   _navigateBack = false;
 
@@ -56,7 +56,7 @@ export class AppStore {
       return 'sl';
     }
 
-    return 'en';
+    return 'sl';
   };
 
   t = (key: TranslationKey) => {

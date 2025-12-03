@@ -48,16 +48,15 @@ const Fares = observer(() => {
                   gap: '5px'
                 }}>
               <Typography variant={'h4'}>{t('availableFares')}</Typography>
-
+              {/* todo something nicer than this accordion - maybe two buttons that allow choosing the time (that open the pickers instead of the standard buttons) */}
               <Accordion variant={'outlined'} sx={{'&.Mui-expanded': {margin: '0px'}, '&.MuiAccordion-root': {borderColor: 'secondary.main'}}}>
                 <AccordionSummary >
-                  <Stack direction={'row'} width={'100%'} justifyContent={'space-between'} alignItems={'center'}>
-                    <ArrowDropDownIcon/>
-                    <Stack sx={{marginLeft: '-20px'}}><Typography variant={'body1'}>{t('startStation')}:</Typography> <Typography
-                        fontWeight={'bold'}>{store.startStation?.label}</Typography></Stack>
-                    <Stack alignItems={'end'}>
-                      <Typography variant={'body1'} textAlign={'end'}>{t('endStation')}: </Typography><Typography
-                        fontWeight={'bold'}>{store.endStation?.label}</Typography></Stack>
+                  <Stack direction={'row'} alignItems={'center'} >
+                    <ArrowDropDownIcon />
+                  <Stack width={'100%'} alignItems={'flex-end'}>
+                      <Typography component='span'>{store.t('departureTime')}: <Typography component={'span'} sx={{fontWeight: 'bold'}}>{store.timeFrom?.format(store.t('dateTimeFormat'))}</Typography></Typography>
+                      <Typography component={'span'}>{store.t('departureTimeTo')}: <Typography component='span' sx={{fontWeight: 'bold'}}>{store.timeTo?.format(store.t('dateTimeFormat'))}</Typography></Typography>
+                  </Stack>
                   </Stack>
                 </AccordionSummary>
                 <AccordionDetails sx={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
@@ -72,7 +71,7 @@ const Fares = observer(() => {
                     toolbarTitle: store.t('selectDateTime'),
                     cancelButtonLabel: store.t('cancelButton'),
                     nextStepButtonLabel: store.t('nextButton'),
-                  }} value={store.timeTo} onChange={(e) => store.setTimeFrom(e)} format={t('dateTimeFormat')}
+                  }} value={store.timeTo} onChange={(e) => store.setTimeTo(e)} format={t('dateTimeFormat')}
                                         label={t('departureTimeTo')}
                   />
                 </AccordionDetails>

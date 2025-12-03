@@ -1,5 +1,6 @@
-import type {Station} from "../types/stations.ts";
+import {mockStations, type Station, type Trip} from "../types/stations.ts";
 import type {PickerValue} from "@mui/x-date-pickers/internals";
+import {MOCK_STATIONS} from "../globals.ts";
 
 
 export class ApiDujpp {
@@ -36,66 +37,56 @@ export class ApiDujpp {
   }
 
   async getStations(filters?: GetStationsFilters): Promise<Station[]> {
+    if (MOCK_STATIONS) {
+      if (filters && filters.stationId) {
+        const line = filters.stationId[0];
+        return mockStations.filter(s => s.id > filters.stationId! && s.id[0] === line);
+      }
+      return mockStations;
+    }
+
     let endpoint = 'stops';
-    if (filters) {}
+    if (filters) {
+      if (filters.stationId) {
+        endpoint += `/${filters.stationId}`;
+      }
+    }
+    console.log(endpoint);
 
     const data = await this.httpGet(endpoint);
-    console.log(data[0]);
-    console.log(data.length);
-    return data as Station[];
+
+    if (data instanceof Array) {
+      return data as Station[];
+    } else {
+      return (data as Station).related ?? [];
+    }
   }
 
   async getTrips(startStationId: string, stopStationId: string, dateTimeFrom?: PickerValue, dateTimeTo?: PickerValue): Promise<any> {
     const data = await this.httpPost('trips', {
       dateTime: dateTimeFrom?.toDate().toISOString() ?? null,
+      searchWindow: dateTimeTo && dateTimeFrom ? Math.floor(((dateTimeTo.toDate().getTime() - dateTimeFrom.toDate().getTime()) / 1000) / 60) : undefined,
       fromStopId: startStationId,
       toStopId: stopStationId,
     } as TripPostRequest);
 
     return data as Trip[];
   }
-
-
 }
+
+
 
 export interface GetStationsFilters {
   nearLocation?: {latitude: number; longitude: number, radius: number};
-  startStationId?: string;
-  endStationId?: string;
+  stationId?: string;
 }
 
 interface TripPostRequest {
  dateTime?: string;
-
+ searchWindow?: number;
  maxTrips?: number;
  fromStopId: string;
  toStopId: string;
 }
 
 
-export interface Coordinates {
-  name: string;
-  latitude: number;
-  longitude: number;
-}
-
-export interface Leg {
-  mode: 'foot' | 'bus' | string;
-  startTime: string;
-  endTime: string;
-  duration: number;
-  distance: number;
-  from: Coordinates;
-  to: Coordinates;
-  authority: string | null;
-  line: string | null;
-  points: string;
-}
-
-export interface Trip {
-  startTime: string;
-  endTime: string;
-  duration: number;
-  distance: number;
-  legs: Leg[];
-}

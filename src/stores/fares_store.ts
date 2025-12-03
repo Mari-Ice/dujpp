@@ -3,9 +3,9 @@ import type {TranslationKey} from "../types/language_utils.ts";
 import {AppRoutes, buildRoute, ParamKeys} from "../types/route_utils.tsx";
 import dayjs from "dayjs";
 import type {PickerValue} from "@mui/x-date-pickers/internals";
-import {mockStations} from "../types/stations.ts";
+import {mockStations, type Trip} from "../types/stations.ts";
 import type {AppStore} from "./app_store.ts";
-import type {ApiDujpp, Trip} from "../api/api_dujpp.ts";
+import type {ApiDujpp} from "../api/api_dujpp.ts";
 
 export class FaresStore {
   api: ApiDujpp;
@@ -40,6 +40,8 @@ export class FaresStore {
     const timeTo = searchParams.get(ParamKeys.TIME_TO);
     if (timeTo) {
       this._timeTo = dayjs(timeTo);
+    } else {
+      this._timeTo = this._timeFrom ? (this._timeFrom as dayjs.Dayjs).add(2, 'hour') : undefined;
     }
     this._startStationId = searchParams.get(ParamKeys.START_STATION) ?? undefined;
     this._endStationId = searchParams.get(ParamKeys.END_STATION) ?? undefined;
@@ -76,22 +78,19 @@ export class FaresStore {
     this._fetchTimetables();
   }
 
-  get startStation() {
-    const filtered = this._stations.filter(station => station.id === this._startStationId);
-    return filtered.length > 0 ? filtered[0] : undefined;
-  }
-
-  get endStation() {
-    const filtered = this._stations.filter(station => station.id === this._endStationId);
-    return filtered.length > 0 ? filtered[0] : undefined;
-  }
-
   async _fetchTimetables() {
     if (!this._startStationId || !this._endStationId) return;
     if (this._loading) return;
     this._loading = true;
     this._timetables = await this.api.getTrips(this._startStationId, this._endStationId, this._timeFrom, this._timeTo);
     this._loading = false;
+  }
+
+  get startStationId() {
+    return this._startStationId;
+  }
+  get endStationId() {
+    return this._endStationId;
   }
 
   get loading() {
@@ -114,10 +113,6 @@ export class FaresStore {
     return this._openTimetableRun;
   }
 
-  getStationLabel(stationId: string) {
-    const filtered = this._stations.filter(station => station.id === stationId);
-    return filtered.length > 0 ? filtered[0].name : undefined;
-  }
 
   buildRouteForPaymentPage(routeId: string) {
     return buildRoute(AppRoutes.PAYMENT, {

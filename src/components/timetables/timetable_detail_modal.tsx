@@ -1,11 +1,11 @@
 import { Box, Typography, Modal, Divider, IconButton, styled } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import type {RunDetail} from "../../types/stations.ts";
+import type {Trip} from "../../types/stations.ts";
 import {useAppStore} from "../../main.tsx";
 import Timetable from "./timetable.tsx";
 import DButton from "../fields_buttons/dbutton.tsx";
 import {useNavigate} from "react-router-dom";
-import type {Trip} from "../../api/api_dujpp.ts";
+import {getTripLine, getTripOrganisation} from "./timetables.tsx";
 
 
 // Style for the modal content box
@@ -57,20 +57,20 @@ const TimetableDetailModal = ({ open, handleClose, trip }: TimetableDetailModalP
           </IconButton>
 
           <Typography id="timetable-detail-title" variant="h5" component="h2" sx={{ mb: 1 }}>
-            {/*{trip.lineName}*/}
+            {getTripLine(trip)}
           </Typography>
           <Typography variant="body2" sx={{ mb: 2 }}>
-            {/*{t('operatedBy')}: {runDetail.companyName}*/}
+            {t('operatedBy')}: {getTripOrganisation(trip)}
           </Typography>
           <Divider sx={{ mb: 2 }} />
 
           <Box sx={{overflowY: 'auto', width: '90%', margin: 'auto'}}>
-              {/*<Timetable runDetail={runDetail} startStationId={store.startStation.id ?? ''} endStationId={store.endStation.id} getStationLabel={(id) => store.getStationLabel(id) ?? ''}/>*/}
+              <Timetable trip={trip} startStationId={store.startStationId ?? ''} endStationId={store.endStationId ?? ''}/>
           </Box>
           <DButton label={t('buyTicket')} onClick={() => {
             store?.setOpenModal(undefined);
             appStore.makePaymentStore();
-            // navigate(store?.buildRouteForPaymentPage(runDetail.runId));
+            navigate(store?.buildRouteForPaymentPage('someid')); // todo: change this into something meaningful - this is a placeholder!
           }} />
         </ModalContent>
       </Modal>

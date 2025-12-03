@@ -26,12 +26,12 @@ const LocationMarker = observer(() => {
     locationerror(e) {
       store.userLocationError(e);
     },
-
   });
 
   useEffect(() => {
     // When the component mounts, trigger the location request.
     // This will prompt the user for permission.
+    map.getContainer().focus();
     map.locate({
       setView: false, // Don't automatically set the view on initial load
       maxZoom: 16,
@@ -43,6 +43,7 @@ const LocationMarker = observer(() => {
 
   useEffect(() => {
       const points = store.getBoundPoints();
+      console.log('centering to points', points);
       if (!points) return;
       const point = new LatLng(points[0][0], points[0][1]);
       if (points.length >= 2) {
@@ -53,7 +54,7 @@ const LocationMarker = observer(() => {
       } else {
         map.flyTo(point, 14, {duration: 0.5, animate: true});
       }
-  }, [store.showMap, map, store.position]);
+  }, [store.showMap, map, store.position, store.centerToStations]);
 
   useEffect(() => {
     if (!store.recenter || !store.position) return;
@@ -78,5 +79,4 @@ const LocationMarker = observer(() => {
   );
 });
 
-// Don't forget to export your new component
 export default LocationMarker;

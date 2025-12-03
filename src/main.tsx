@@ -10,6 +10,7 @@ import {configure} from "mobx";
 import {AppStore} from "./stores/app_store";
 import {MultiProvider} from './utils'
 import {DujppTheme} from "./theme";
+import {LOCAL} from "./globals.ts";
 // import {EmbeddedCheckoutProvider} from '@stripe/react-stripe-js';
 // import {loadStripe} from '@stripe/stripe-js';
 
@@ -19,7 +20,8 @@ configure({
 // const stripePromise = loadStripe("pk_test_51SKfP1EJGJYBk0kgU3RkwwwaOsdCcWp1ldN606Rz43GHRwkHxAogHFjQBibaId3qb9gloEChtgoVsOMlpaLjU3JL00QXvH7JpO");
 
 const baseURL = window.location.hostname;
-const apiBaseUrl = window.location.hostname.includes('localhost') ? 'http://10.32.25.198:8000/' : `https://${baseURL}/api/v1/`;
+const apiBaseUrl = window.location.hostname.includes('localhost') ?
+    (LOCAL ? 'http://localhost:8000/' : 'http://10.32.25.198:8000/') : `https://${baseURL}/api/v1/`;
 
 export const appStore = new AppStore(apiBaseUrl);
 console.log(apiBaseUrl);

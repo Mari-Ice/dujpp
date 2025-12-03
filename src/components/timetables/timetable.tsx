@@ -6,19 +6,24 @@ import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import {Box, Typography, Stack,} from '@mui/material';
 import {observer} from "mobx-react-lite";
-import type {RunDetail} from "../../types/stations.ts";
+import type {Leg, Trip} from "../../types/stations.ts";
 import {timelineItemClasses} from "@mui/lab";
+import dayjs from "dayjs";
+import {useAppStore} from "../../main.tsx";
 
 interface TimetableProps {
-  runDetail: RunDetail;
+  trip: Trip;
   startStationId: string;
   endStationId: string;
-  getStationLabel: (stationId: string) => string;
 }
 
-const Timetable = observer(({runDetail, startStationId, endStationId, getStationLabel}: TimetableProps) => {
-  const startStationIndx = runDetail.stops.findIndex(s => s.stationId === startStationId);
-  const endStationIndx = runDetail.stops.findIndex(s => s.stationId === endStationId);
+const Timetable = observer(({trip, startStationId, endStationId}: TimetableProps) => {
+  const lineLeg = trip.legs.find((leg: Leg) => !!leg.authority);
+  if (!lineLeg) return null;
+  const startStationIndx = lineLeg.stops?.findIndex(s => s.id === startStationId);
+  const endStationIndx = lineLeg.stops?.findIndex(s => s.id === endStationId);
+  const store = useAppStore();
+  const t = store.t;
 
   return (
       <Box id="timetable-detail-description" sx={{maxWidth: '100%', margin: 'auto'}}>
@@ -30,18 +35,17 @@ const Timetable = observer(({runDetail, startStationId, endStationId, getStation
             padding: 0,
           },
         }}>
-          {runDetail.stops.map((stop, index) => {
+          {lineLeg.stops?.map((stop, index) => {
             const isFirst = index === 0;
-            const isLast = index === runDetail.stops.length - 1;
-            const stationLabel = getStationLabel(stop.stationId);
-            const isColored = index >= startStationIndx && index <= endStationIndx;
+            const isLast = index === lineLeg.stops!.length - 1;
+            const stationLabel = stop.name;
             const isStartOrEnd = index === startStationIndx || index === endStationIndx;
             return (
-                <TimelineItem key={stop.stationId + stop.time}>
+                <TimelineItem key={stop.id}>
                   <TimelineSeparator>
                     <TimelineDot
                         variant={isStartOrEnd || isFirst || isLast ? 'filled' : 'outlined'}
-                        color={isColored ? isStartOrEnd ? 'secondary' : 'primary' : 'grey'}
+                        color={isStartOrEnd ? 'secondary' : 'primary'}
                     />
                     {!isLast && <TimelineConnector/>}
                   </TimelineSeparator>
@@ -61,7 +65,8 @@ const Timetable = observer(({runDetail, startStationId, endStationId, getStation
                           fontWeight={isStartOrEnd ? 'bold' : "medium"}
                           marginLeft={'20px'}
                       >
-                        {stop.time}
+                        {stop.id === startStationId && dayjs(lineLeg.startTime).format(t('timeFormat'))}
+                        {stop.id === endStationId && dayjs(lineLeg.endTime).format(t('timeFormat'))}
                       </Typography>
                     </Stack>
                   </TimelineContent>

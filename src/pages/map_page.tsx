@@ -4,7 +4,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import {observer} from "mobx-react-lite";
 import LocationMarker from "../components/map/location_marker.tsx";
-import L from "leaflet";
+import L, {type LatLngExpression} from "leaflet";
 import type {Station} from "../types/stations.ts";
 import {DujppColors} from "../theme.tsx";
 import MarkerClusterGroup from "react-leaflet-markercluster";
@@ -16,12 +16,25 @@ export interface Position {
 
 interface MapPageProps {
   center?: Position;
-  polylineCoordinates?: Position[];
+  polylineCoordinates?: LatLngExpression[];
   markers?: any[];
   initialZoom?: number;
 }
 
 const MapPage = observer(({center, polylineCoordinates, markers, initialZoom}: MapPageProps) => {
+
+  const clusterMarkers = [];
+  const displayMarkers = [];
+  if (!!markers) {
+    for (const marker of markers) {
+      if (marker.selected) {
+        displayMarkers.push(marker);
+      } else {
+        clusterMarkers.push(marker);
+      }
+    }
+  }
+
 
   return (
       <MapContainer
@@ -35,16 +48,22 @@ const MapPage = observer(({center, polylineCoordinates, markers, initialZoom}: M
             url="https://mt3.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&scale=2"
         />
 
-        {/*{polylineCoordinates &&*/}
-        {/*    <Polyline positions={polylineCoordinates.map((p) => [p.lat, p.lng])} color="blue" weight={5}/>}*/}
-        {markers &&
+        {polylineCoordinates &&
+            <Polyline positions={polylineCoordinates} color={`${DujppColors.primary}`} weight={5}/>}
+        {displayMarkers && displayMarkers.map((marker, index) => (
+            <MarkerIcon key={`${index}-standalone-${marker.station.id}`} itemKey={index} lat={marker.station.latitude} lng={marker.station.longitude}
+                        markerInfo={marker.station.name} station={marker.station} onClick={marker.onClick} color={marker.color} />
+        ))}
+        {clusterMarkers &&
             <MarkerClusterGroup
-            disableClusteringAtZoom={15}
+            removeOutsideVisibleBounds={true}
+            showCoverageOnHover={false}
+            iconCreateFunction={ClusterIcon}
             >
             {
-              markers.map((marker, index) => (
-                  <MarkerIcon key={index} itemKey={index} lat={marker.station.latitude} lng={marker.station.longitude}
-                              markerInfo={marker.station.name} station={marker.station} onClick={marker.onClick}
+              clusterMarkers.map((marker, index) => (
+                  <MarkerIcon key={`${index}-${marker.station.id}-cluster`} itemKey={index} lat={marker.station.latitude} lng={marker.station.longitude}
+              markerInfo={marker.station.name} station={marker.station} onClick={marker.onClick}
                               color={marker.color}/>
               ))
             }
@@ -75,7 +94,6 @@ const MarkerIcon = ({itemKey, lat, lng, markerInfo, onClick, station, color = Du
   station?: Station,
   color?: string,
 }) => {
-
   const currentColor = color;
   return <div
       style={{ color: currentColor }}
@@ -95,3 +113,22 @@ const MarkerIcon = ({itemKey, lat, lng, markerInfo, onClick, station, color = Du
     </Marker>
   </div>
 }
+
+const ClusterIcon = (cluster: any) => {
+  const count = cluster.getChildCount();
+  const baseColor = DujppColors.primary;
+  const size = 35;
+  const outerStyle = `background-color: ${DujppColors.primaryLight}80; color: ${DujppColors.contentShade}; padding: ${size * 0.08}px; border-radius: 100%; display: flex; align-items: center; justify-content: center; width: ${size * 1.16}px; height: ${size * 1.16}px;`;
+  const innerStyle = `background-color: ${baseColor}; color: white; font-size: 14px; font-weight: bold; font-family: Barlow; line-height: ${size}px; width: ${size}px; height: ${size}px; text-align: center; display: inline-block; border-radius: 100%;`;
+  return new L.DivIcon({
+    html: `
+          <div style="${outerStyle}">
+            <span style="${innerStyle}">
+              ${count}
+            </span>
+          </div>
+        `,
+    className: `marker-cluster-custom`,
+    iconSize: new L.Point(40, 40)
+  });
+};

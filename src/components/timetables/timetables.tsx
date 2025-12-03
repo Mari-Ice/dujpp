@@ -2,15 +2,15 @@ import {observer} from "mobx-react-lite";
 import {Stack, Card, Typography, Box} from "@mui/material";
 import {useAppStore} from "../../main.tsx";
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
-import type {Trip} from "../../api/api_dujpp.ts";
 import dayjs from "dayjs";
+import type {Trip} from "../../types/stations.ts";
 
 interface TimetableProps {
   timetables: Trip[];
   onSelectedRun: (trip: Trip) => void;
 }
 
-function getStartStationLabel(trip: Trip) {
+export function getStartStationLabel(trip: Trip) {
   if (trip.legs.length === 0) return '';
   for (const leg of trip.legs) {
     if (!!leg.authority) {
@@ -19,7 +19,7 @@ function getStartStationLabel(trip: Trip) {
   }
   return trip.legs[0].from.name;
 }
-function getEndStationLabel(trip: Trip) {
+export function getEndStationLabel(trip: Trip) {
   if (trip.legs.length === 0) return '';
   for (let i = trip.legs.length - 1; i >= 0; i--) {
     if (!!trip.legs[i].authority) {
@@ -29,7 +29,7 @@ function getEndStationLabel(trip: Trip) {
   return trip.legs[trip.legs.length - 1].to.name;
 }
 
-function getStartStationTime(trip: Trip, t: any) {
+export function getStartStationTime(trip: Trip, t: any) {
   if (trip.legs.length === 0) return '';
   for (const leg of trip.legs) {
     if (!!leg.authority) {
@@ -39,7 +39,7 @@ function getStartStationTime(trip: Trip, t: any) {
   return dayjs(trip.legs[0].startTime).format(t('timeFormat'));
 }
 
-function getEndStationTime(trip: Trip, t: any) {
+export function getEndStationTime(trip: Trip, t: any) {
   if (trip.legs.length === 0) return '';
   for (let i = trip.legs.length - 1; i >= 0; i--) {
     if (!!trip.legs[i].authority) {
@@ -49,7 +49,7 @@ function getEndStationTime(trip: Trip, t: any) {
   return dayjs(trip.legs[trip.legs.length - 1].endTime).format(t('timeFormat'));
 }
 
-function getTripOrganisation(trip: Trip) {
+export function getTripOrganisation(trip: Trip) {
   if (trip.legs.length === 0) return '';
   for (const leg of trip.legs) {
     if (!!leg.authority) {
@@ -58,7 +58,7 @@ function getTripOrganisation(trip: Trip) {
   }
   return trip.legs[0].authority;
 }
-function getTripLine(trip: Trip) {
+export function getTripLine(trip: Trip) {
   if (trip.legs.length === 0) return '';
   for (const leg of trip.legs) {
     if (!!leg.line) {

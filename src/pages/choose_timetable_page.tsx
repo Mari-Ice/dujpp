@@ -24,17 +24,8 @@ const ChooseTimetablePage = observer(() => {
   const navigate = useNavigate();
   const t = appStore.t;
   const [inMapStation, setInMapStation] = useState<Station | undefined>(undefined);
-  const polyline = [];
   const storeOtherStation = store.showMap === 'start' ? store.endStation : store.startStation;
 
-  // if (store.showMapBool) {
-  //   if (storeOtherStation) {
-  //     polyline.push({lat: storeOtherStation.latitude, lng: storeOtherStation.longitude});
-  //   }
-  //   if (inMapStation) {
-  //     polyline.push({lat: inMapStation.latitude, lng: inMapStation.longitude});
-  //   }
-  // }
   return (
       <Body>
         <Stack sx={{
@@ -105,22 +96,29 @@ const ChooseTimetablePage = observer(() => {
             )`,
             alignContent: 'end',
             boxSizing: 'border-box',
+            visibility: store.showMapBool ? 'visible' : 'hidden',
+            transition: 'visibility 0s linear 0.25s, opacity 0.25s 0s',
           }}>
             <Box sx={{padding: '30px',}}>
               <StationChooser label={t(store.showMap == 'start' ? 'startStation' : 'endStation')}
-                              onChange={v => setInMapStation(v)}
+                              onChange={v => {
+                                setInMapStation(v);
+
+                              }}
                               options={store.stations} value={inMapStation} showMapButton={false}/>
             </Box>
             <Box sx={{
               overflow: 'hidden', position: 'relative', borderTopLeftRadius: '20px', height: 'calc(100% - 100px)',
               borderTopRightRadius: '20px', backgroundColor: 'blue',
             }}>
+              {store.showMapBool &&
               <Box sx={{position: 'relative'}}>
-                <MapPage markers={store.stations.map(s => {
+                <MapPage markers={store.visualizedStations.map(s => {
                   const isOtherStation = storeOtherStation !== undefined && store.isEqualStations(s, storeOtherStation);
                   return {
                     station: s,
                     color: isOtherStation ? DujppColors.secondary : store.isEqualStations(s, inMapStation) ? DujppColors.error : DujppColors.primary,
+                    selected: store.isEqualStations(s, inMapStation) || isOtherStation,
                     onClick: (s: Station | undefined) => {
                       if (!isOtherStation) {
                         setInMapStation(s);
@@ -128,7 +126,8 @@ const ChooseTimetablePage = observer(() => {
                     }
                   };
                 })}
-                         center={{lat: 46.0569, lng: 14.5058}} initialZoom={8} polylineCoordinates={polyline}/>
+                         center={{lat: 46.0569, lng: 14.5058}} initialZoom={8}
+                         polylineCoordinates={store.polyline}/>
                 <IconButton
                     aria-label="back"
                     onClick={() => store.showMap = undefined}
@@ -144,7 +143,7 @@ const ChooseTimetablePage = observer(() => {
                 >
                   <ArrowBackIcon/>
                 </IconButton>
-              </Box>;
+              </Box>}
               <Stack sx={{
                 position: 'absolute',
                 right: '2%',

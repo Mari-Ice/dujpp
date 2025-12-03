@@ -1,11 +1,12 @@
 import {makeAutoObservable} from "mobx";
-import type {Station} from "../types/stations.ts";
-import {type ErrorEvent, type LatLng, LatLngBounds, type LatLngTuple} from "leaflet";
+import type {Station, Trip} from "../types/stations.ts";
+import {type ErrorEvent, type LatLng, LatLngBounds, type LatLngExpression, type LatLngTuple} from "leaflet";
 import type {TranslationKey} from "../types/language_utils.ts";
 import {mockStations} from "../types/stations.ts";
 import type {PickerValue} from "@mui/x-date-pickers/internals";
 import dayjs from "dayjs";
 import type {ApiDujpp, GetStationsFilters} from "../api/api_dujpp.ts";
+import { decode } from "@googlemaps/polyline-codec";
 
 export class LocationStore {
   api: ApiDujpp;
@@ -17,6 +18,7 @@ export class LocationStore {
   _userPositionAccuracy?: number;
   _userLocationError?: ErrorEvent;
   _errors: Map<string, string | undefined> = new Map();
+  _allStations: Station[] = [];
   _departureStations: Station[] = [];
   _departureFilters: GetStationsFilters = {};
   _arrivalStations: Station[] = [];
@@ -25,12 +27,16 @@ export class LocationStore {
   getBounds: boolean = false;
   mapBounds?: LatLngBounds;
   t: (key: TranslationKey) => string;
+  _polyline: LatLngExpression[] | null = null;
+  _centerToStations: boolean = false;
 
   constructor(t: (key: TranslationKey) => string, api: ApiDujpp) {
     makeAutoObservable(this);
     this.t = t;
     this._date = dayjs();
     this.api = api;
+    this.refreshStations('start');
+    this.refreshStations('stop');
   }
 
   get mockStations() {
@@ -48,32 +54,67 @@ export class LocationStore {
     }
   }
 
-  get departureStations(): Station[] {
-    if (this._departureStations.length === 0) {
-      this.refreshStations('start', this._departureFilters);
+  get visualizedStations(): Station[] {
+    if (this.showMapBool) {
+      if (this.showMap === 'start') {
+        return this._endStation ? this.departureStations.concat([this._endStation]) : this.departureStations;
+      }
+      return this._startStation ? this.arrivalStations.concat([this._startStation]) : this.arrivalStations;
+    } else {
+      return this.stations;
     }
-    return this._departureStations;
+  }
+
+  get departureStations(): Station[] {
+    // if (this._departureStations.length === 0) {
+    //   this.refreshStations('start', this._departureFilters);
+    // }
+    return this._departureStations ?? [];
   }
 
 
   get arrivalStations(): Station[] {
-    if (this._arrivalStations.length === 0) {
-      this.refreshStations('stop', this._arrivalFilters);
-    }
-    return this._arrivalStations;
+    // if (this._arrivalStations.length === 0) {
+    //   this.refreshStations('stop', this._arrivalFilters);
+    // }
+    return this._arrivalStations ?? [];
   }
 
   refreshStations(departure_arrival: 'start' | 'stop', filters?: GetStationsFilters) {
     this.api.getStations(filters).then((stations: Station[]) => {
-      if (stations.length === 0) {
-        return;
+      if (!stations || stations.length === 0) {
+        stations = [];
       }
       if (departure_arrival === 'start') {
-        this._departureStations = stations;
+        if (filters && filters.stationId) {
+          // we need to filter the current _departureStations over the ids provided in the new data
+          const ids = stations.map(station => station.id);
+          // console.log('filtering departure stations', ids.length);
+          this._departureStations = this._allStations.filter(station => ids.includes(station.id));
+        } else {
+          this._departureStations = stations;
+        }
+        // console.log('departure stations', this._departureStations.length);
       } else {
-        this._arrivalStations = stations;
+        if (filters && filters.stationId) {
+          // we need to filter the current _arrivalStations over the ids provided in the new data
+          const ids = stations.map(station => station.id);
+          // console.log('filtering arrival stations', ids.length);
+          // console.log('all stations include those: ', ids.filter(id => this._allStations.map(s => s.id).includes(id)).length);
+
+          this._arrivalStations = this._allStations.filter(station => ids.includes(station.id));
+        } else {
+          this._arrivalStations = stations;
+        }
+        // console.log('arrival stations', this._arrivalStations.length);
+      }
+
+      if (!filters || !filters.stationId) {
+        this._allStations = stations;
+        // console.log('all stations include those: ', stations.length);
       }
     })
+
   }
 
   set showMap(value: 'start' | 'stop' | undefined) {
@@ -87,29 +128,50 @@ export class LocationStore {
     return this._showMap !== undefined;
   }
 
-  setStartStation = (station: Station) => {
-    this._startStation = station;
+  setStartStation = (station: Station | null) => {
+    this._startStation = station ?? undefined;
     if (this.getError('startStation')) {
       if (this.getError('startStation') === this.t('sameStationsError') && !this.isEqualStations(this.startStation, this.endStation)) {
         this.errors(undefined, 'endStation');
       }
       this.errors(undefined, 'startStation');
     }
-    this._departureFilters = {startStationId: station.id};
+    if (!station) {
+      this._departureFilters = {};
+      if (!this._endStation) {
+        this.refreshStations('stop');
+      }
+    } else {
+      this._departureFilters = {stationId: station.id};
+      this.refreshStations('stop', this._departureFilters);
+    }
+    this.getPolyline();
   }
+
   get startStation (){
     return this._startStation;
   }
-  setEndStation = (station: Station) => {
-    this._endStation = station;
+
+  setEndStation = (station: Station | null) => {
+    this._endStation = station ?? undefined;
     if (this.getError('endStation')) {
       if (this.getError('endStation') === this.t('sameStationsError') && !this.isEqualStations(this.startStation, this.endStation)) {
         this.errors(undefined, 'startStation');
       }
       this.errors(undefined, 'endStation');
     }
-    this._arrivalFilters = {endStationId: station.id};
+    if (!station) {
+      this._arrivalFilters = {};
+      if (!this._startStation) {
+        this.refreshStations('start');
+      }
+    } else {
+      this._arrivalFilters = {stationId: station.id};
+      this.refreshStations('start', this._arrivalFilters);
+    }
+    this.getPolyline();
   }
+
   get endStation (){
     return this._endStation;
   }
@@ -120,7 +182,7 @@ export class LocationStore {
 
   isEqualStations(s1?: Station, s2?: Station) {
     if (!s1 || !s2) return !s1 && !s2;
-    return s1.latitude === s2.latitude && s1.longitude === s2.longitude && s1.name === s2.name;
+    return s1.id === s2.id;
   }
 
   setPosition = (position: LatLng) => {
@@ -148,14 +210,18 @@ export class LocationStore {
     let points: LatLngTuple[] = [];
     if (point) {
       points.push([point.lat, point.lng]);
-    } else if (this.position) {
-      points.push([this.position.lat, this.position.lng]);
     }
-    if (this.startStation) {
-      points.push([this.startStation.latitude, this.startStation.longitude]);
+    if (this.startStation && this.startStation.latitude && this.startStation.longitude) {
+      points.push([this.startStation.latitude!, this.startStation.longitude!]);
     }
-    if (this.endStation) {
-      points.push([this.endStation.latitude, this.endStation.longitude]);
+    if (this.endStation && this.endStation.latitude && this.endStation.longitude) {
+      points.push([this.endStation.latitude!, this.endStation.longitude!]);
+    }
+
+    if (points.length === 1) {
+      if (this.position) {
+        points.push([this.position.lat, this.position.lng]);
+      }
     }
 
     if (points.length === 0) {
@@ -232,6 +298,50 @@ export class LocationStore {
     this.refreshStations(this.showMap!, {...this._getFilters(), nearLocation: {latitude: center.lat, longitude: center.lng, radius: radius}});
   }
 
+  private getTripPoints(trip: Trip): LatLngExpression[] | null {
+    if (!trip.legs) return null;
+    console.log(trip.legs);
+    if (trip.legs.length === 0) {
+      return null;
+    }
+    for (const leg of trip.legs) {
+      if (leg.points && leg.authority) {
+        return decode(leg.points);
+      }
+    }
+    return null;
+  }
 
+  async getPolyline() {
+    if (!this._startStation || !this._endStation) {
+      this._polyline = null;
+      return;
+    }
+    const trips =  await this.api.getTrips(this._startStation.id, this._endStation.id, this._date);
+    if (trips.length === 0) {
+      this._polyline = null;
+      return;
+    }
+    this._polyline = this.getTripPoints(trips[0]);
+  }
+  get polyline() {
+    if (this._polyline) {
+      return this._polyline;
+    } else {
+      this.getPolyline();
+      return undefined;
+    }
+  }
+  get centerToStations() {
+    return this._centerToStations;
+  }
 
+  recenterToStations() {
+    if (this._centerToStations) {
+      this._centerToStations = false;
+      setTimeout(() =>  this.recenterToStations(), 100);
+    } else {
+      this._centerToStations = true;
+    }
+  }
 }
