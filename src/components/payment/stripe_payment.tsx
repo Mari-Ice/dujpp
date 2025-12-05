@@ -1,15 +1,11 @@
 import {
-  CardElement,
   useStripe,
   useElements,
-  EmbeddedCheckout,
-  EmbeddedCheckoutProvider,
-  PaymentElement, AddressElement, ExpressCheckoutElement
+  PaymentElement, AddressElement,
 } from '@stripe/react-stripe-js';
 import {useState} from "react";
 import DButton from "../fields_buttons/dbutton.tsx";
-import {DujppColors} from "../../theme.tsx";
-import {stripePromise} from "../../main.tsx";
+import {useAppStore} from "../../main.tsx";
 
 interface StripePaymentProps {
   clientSecret?: string | null;
@@ -20,71 +16,30 @@ interface StripePaymentProps {
 }
 
 export function StripePayment({
-                                clientSecret,
+                                // clientSecret,
                                 disabled,
-                                inProgress,
-                                onSuccess,
-                                onError
+                                // inProgress,
+                                // onSuccess,
+                                // onError
                               }: StripePaymentProps) {
   const stripe = useStripe();
   const elements = useElements();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const handleSubmit = async (event: React.FormEvent) => {
-//     event.preventDefault();
-//     if (!stripe || !elements || !clientSecret) {
-//       return;
-//     }
-//     setLoading(true);
-//     inProgress?.(true);
-//     setError(null);
-// // Confirm the payment with the card element
-//     const result = await stripe.confirmCardPayment(clientSecret, {
-//           payment_method:
-//         }
-//     );
-//     setLoading(false);
-//     inProgress?.(false);
-//     if (result.error) {
-//       setError(result.error.message || 'Payment failed');
-//       onError();
-//     } else if (result.paymentIntent?.status === 'succeeded') {
-//       setSuccess(true);
-//       onSuccess();
-//     }
-  };
-  return (
-      <div style={{margin: 'auto', width: '100%'}}>
-      <form onSubmit={handleSubmit}>
-        <div style={{
-          padding: '12px',
-          border: error ? '1px solid red' : '1px solid #ccc',
-          borderRadius: '4px',
-          marginBottom: '16px',
-        }}>
-          <AddressElement options={{mode: 'billing'}}/>
-          {/*<PaymentElement />*/}
+  const appStore = useAppStore();
+  const store = appStore.paymentStore;
+  if (!store) return null;
 
-        </div>
-        {error && (
-            <div style={{ color: 'red', marginBottom: '16px' }}>
-              {error}
-            </div>
-        )}
-        {success && (
-            <div style={{ color: 'green', marginBottom: '16px' }}>
-              Payment successful!
-            </div>
-        )}
+  return (
+      <div style={{margin: 'auto', width: '100%', overflowY: 'scroll'}}>
+      <form onSubmit={() => store.handleSubmitPayment(stripe, elements)} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <PaymentElement id={'payment-element'} options={{layout: 'tabs'}}/>
         <DButton
             type="submit"
-            label={loading ? 'Processing...' : success ? 'Paid' : 'Pay Now'}
-            onClick={() => {
-
-            }}
-            disabled={loading || !stripe || !elements || !!success || disabled}
+            label={store.loading ? store.t('processing') : store.paymentSuccessful ? store.t('paid') : store.t('pay')}
+            sx={{marginTop: '30px', maxWidth: '200px', width: '100%'}}
+            onClick={() => {}}
+            disabled={!stripe || !elements || disabled}
         />
+
       </form>
       </div>
   );

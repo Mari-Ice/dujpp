@@ -72,9 +72,11 @@ export class ApiDujpp {
 
     return data as Trip[];
   }
+
+  async createPaymentIntent(routeId: string, adults: number, children06: number, children714: number, baggage: number) {
+    return (await this.httpPost('create-payment-intent', {routeId, adults, children06, children714, baggage})) as PaymentIntentResponse;
+  }
 }
-
-
 
 export interface GetStationsFilters {
   nearLocation?: {latitude: number; longitude: number, radius: number};
@@ -87,6 +89,10 @@ interface TripPostRequest {
  maxTrips?: number;
  fromStopId: string;
  toStopId: string;
+}
+
+export interface PaymentIntentResponse {
+  clientSecret: string;
 }
 
 

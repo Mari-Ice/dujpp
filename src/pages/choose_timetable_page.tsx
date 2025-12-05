@@ -13,7 +13,7 @@ import type {Station} from "../types/stations.ts";
 import {useNavigate} from "react-router-dom";
 import Body from "../components/common/body.tsx";
 import {AppRoutes, buildRoute, ParamKeys} from "../types/route_utils.tsx";
-import {DujppColors} from "../theme.tsx";
+import {datePickerSlotProps, DujppColors} from "../theme.tsx";
 import MyLocationRoundedIcon from '@mui/icons-material/MyLocationRounded';
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 
@@ -46,9 +46,16 @@ const ChooseTimetablePage = observer(() => {
               textField: {
                 helperText: store.getError('date') ? t('dateError') : undefined,
               },
+              ...datePickerSlotProps,
             }} onError={(newError) => {
               store.errors(newError?.toString() ?? undefined, 'date')
-            }} onChange={(e) => store.setDate(e?.startOf('day'))} value={store.date}/>
+            }} onChange={(e) => store.setDate(e?.startOf('day'))} value={store.date}
+                        localeText={{
+                          toolbarTitle: store.t('selectDateTime'),
+                          cancelButtonLabel: store.t('cancelButton'),
+                          nextStepButtonLabel: store.t('nextButton'),
+                        }}
+            />
             <StationChooser label={t('startStation')} onChange={v => store.setStartStation(v)}
                             options={store.departureStations}
                             onMap={() => {
@@ -103,7 +110,6 @@ const ChooseTimetablePage = observer(() => {
               <StationChooser label={t(store.showMap == 'start' ? 'startStation' : 'endStation')}
                               onChange={v => {
                                 setInMapStation(v);
-
                               }}
                               options={store.stations} value={inMapStation} showMapButton={false}/>
             </Box>

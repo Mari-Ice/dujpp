@@ -50,6 +50,9 @@ export const translations = {
     share: 'Share',
     proceedToPayment: 'Proceed to Payment',
     youAreHere: 'You are here.',
+    paid: 'Paid',
+    processing: 'Processing...',
+    noOptions: 'No options found.',
   },
   'sl': {
     appName: 'Dujpp',
@@ -100,6 +103,9 @@ export const translations = {
     share: 'Deli',
     proceedToPayment: 'Nadaljuj na plačilo',
     youAreHere: 'Tukaj ste.',
+    paid: 'Plačano',
+    processing: 'V obdelavi ...',
+    noOptions: 'Ni najdenih možnosti.',
   },
 
 };

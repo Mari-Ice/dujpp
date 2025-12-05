@@ -4,13 +4,15 @@ import {stripePromise, useAppStore} from "../main.tsx";
 import {AppRoutes, buildRoute, ParamKeys} from "../types/route_utils.tsx";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import InvalidParams from "./invalid_params.tsx";
-import { observer } from "mobx-react-lite";
+import {observer} from "mobx-react-lite";
 import NumericalIncrement from "../components/fields_buttons/numerical_increment.tsx";
 import DButton from "../components/fields_buttons/dbutton.tsx";
 import Ticket from "./ticket.tsx";
 import {useEffect} from "react";
 import {StripePayment} from "../components/payment/stripe_payment.tsx";
 import {Elements} from "@stripe/react-stripe-js";
+import {DujppColors} from "../theme.tsx";
+import {DEBUG_PAYMENT} from "../globals.ts";
 
 
 const PaymentPage = observer(() => {
@@ -30,32 +32,59 @@ const PaymentPage = observer(() => {
       appStore.incrementTimer();
     }
   }
-  if (appStore.navigateBack) {
+  if (appStore.navigateBack && !DEBUG_PAYMENT) {
     navigate(buildRoute(AppRoutes.HOME, undefined, {[ParamKeys.LANGUAGE]: appStore.language,}));
   }
+  console.log('rebuilding payment page')
+  console.log(store.paymentSuccessful, store.paymentStarted, store.validParams, store.clientSecret)
 
+  useEffect(
+      () => {
+
+      }
+  , [store.clientSecret])
   return (
       <Body>
-        <Stack sx={{padding: '20px', justifyContent: 'space-between', height: 'calc(100% - 60px)'}}>
-        {!store.validParams ? <InvalidParams/> :
-            !store.paymentSuccessful ? !store.paymentStarted ?
-            <Stack alignItems={'start'} padding={'20px'} gap={'20px'} height={'100%'}>
-              <Typography variant={'h2'}>{t('paymentPageTitle')}</Typography>
-              {/*{!store.runDetail ? <CircularProgress /> : <Summary runDetail={store.runDetail} startStop={store.startStation} endStop={store.endStation}/>}*/}
-              <NumericalIncrement value={store.adults} onChange={(v) => store.setAdults(v)} label={t('adults')}/>
-              <NumericalIncrement value={store.children714} onChange={(v) => store.setChildren714(v)} label={t('children714')} />
-              <NumericalIncrement value={store.children06} onChange={(v) => store.setChildren06(v)} label={t('children06')}/>
-              <NumericalIncrement value={store.baggage} onChange={(v) => store.setBaggage(v)} label={t('baggage')}/>
-              <Typography variant={'h3'}>{t('totalPrice')}: {store.price} EUR</Typography>
-              <DButton label={t('proceedToPayment')} onClick={() => {
-                store.startPayment();
-              }} sx={{justifySelf: 'end'}}/>
-            </Stack>
-                    : <Elements stripe={stripePromise}><StripePayment onSuccess={() => {}} onError={() => {}}/></Elements>
-                : <Ticket />
-        }
-        <DButton label={t('travelingElsewhere')} onClick={() => navigate(buildRoute(AppRoutes.HOME, undefined, {[ParamKeys.LANGUAGE]: appStore.language}))}/>
-      </Stack>
+        <Stack sx={{padding: '20px', justifyContent: 'space-between', height: 'calc(100% - 30px)'}}>
+          {!store.paymentSuccessful ? !store.clientSecret ?
+                      <Stack alignItems={'start'} padding={'20px'} gap={'20px'} height={'100%'}>
+                        <Typography variant={'h2'}>{t('paymentPageTitle')}</Typography>
+                        {/*{!store.runDetail ? <CircularProgress /> : <Summary runDetail={store.runDetail} startStop={store.startStation} endStop={store.endStation}/>}*/}
+                        <NumericalIncrement value={store.adults} onChange={(v) => store.setAdults(v)} label={t('adults')}/>
+                        <NumericalIncrement value={store.children714} onChange={(v) => store.setChildren714(v)}
+                                            label={t('children714')}/>
+                        <NumericalIncrement value={store.children06} onChange={(v) => store.setChildren06(v)}
+                                            label={t('children06')}/>
+                        <NumericalIncrement value={store.baggage} onChange={(v) => store.setBaggage(v)}
+                                            label={t('baggage')}/>
+                        <Typography variant={'h3'}>{t('totalPrice')}: {store.price} EUR</Typography>
+                        <DButton label={t('proceedToPayment')} onClick={() => {
+                          store.startPayment();
+                        }} sx={{justifySelf: 'end'}}/>
+                      </Stack>
+                      : <Elements stripe={stripePromise} options={{
+                        clientSecret: store.clientSecret, appearance: {
+                          theme: 'stripe', variables: {
+                            colorPrimary: DujppColors.primaryLight,
+                            colorBackground: DujppColors.neutral,
+                            colorText: DujppColors.content,
+                            iconColor: DujppColors.primaryLight,
+                            colorTextPlaceholder: `${DujppColors.primaryLight}80`,
+                            fontSizeBase: '14px',
+                            colorDanger: DujppColors.error,
+                          },
+
+                        }
+                      }}>
+                        <StripePayment onSuccess={() => {
+                        }} onError={() => {
+                        }}/>
+                      </Elements>
+                  : <Ticket/>
+          }
+          <DButton label={t('travelingElsewhere')} sx={{marginTop: '10px'}}
+                   onClick={() => navigate(buildRoute(AppRoutes.HOME, undefined, {[ParamKeys.LANGUAGE]: appStore.language}))}/>
+        </Stack>
       </Body>
   );
 });

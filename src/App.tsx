@@ -13,6 +13,7 @@ import 'dayjs/locale/en';
 import 'dayjs/locale/sl';
 import {ParamKeys} from "./types/route_utils.tsx";
 import {AppStore} from "./stores/app_store.ts";
+import PaymentComplete from "./components/payment/payment_complete.tsx";
 
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
           <Route path={'/fares'} element={<Fares/>}/>
           <Route path={'/payment'} element={<PaymentPage/>}/>
           <Route path={'/ticket'} element={<Ticket/>}/>
+          <Route path={'/payment-completed'} element={<PaymentComplete/>}/>
         </Routes>
       </div>
     </MultiProvider>

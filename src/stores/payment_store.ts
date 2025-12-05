@@ -19,6 +19,8 @@ export class PaymentStore {
   _paymentSuccessful: boolean = false;
   _paymentId?: string;
   _paymentStarted: boolean = false;
+  _clientSecret?: string;
+  _loading = false;
   api: ApiDujpp;
 
   constructor(t: (key: TranslationKey) => string, api: ApiDujpp) {
@@ -57,12 +59,15 @@ export class PaymentStore {
   setAdults(count: number) {
     this.adults = count;
   }
+
   setChildren714(count: number) {
     this.children714 = count;
   }
+
   setChildren06(count: number) {
     this.children06 = count;
   }
+
   setBaggage(count: number) {
     this.baggage = count;
   }
@@ -72,7 +77,7 @@ export class PaymentStore {
   }
 
   getMockPrice() {
-    return this.adults *  + this.children714 * 50 + this.children06 * 20 + this.baggage * 10;
+    return this.adults * +this.children714 * 50 + this.children06 * 20 + this.baggage * 10;
   }
 
   pay() {
@@ -90,10 +95,31 @@ export class PaymentStore {
 
   startPayment() {
     this._paymentStarted = true;
+    this.api.createPaymentIntent(this._routeId ?? '', this.adults, this.children06, this.children714, this.baggage).then(paymentIntent => {
+      this._clientSecret = paymentIntent.clientSecret;
+    })
   }
 
   get paymentStarted() {
     return this._paymentStarted;
   }
 
+  get clientSecret() {
+    return this._clientSecret;
+  }
+
+  async handleSubmitPayment(stripe: any, elements: any) {
+    if (!stripe || !elements) return;
+
+    const {error} = await stripe.confirmPayment({
+      elements,
+      confirmParams: {return_url: `http://localhost:5173/payment-completed`}
+    });
+    if (error) {
+      alert(error.message); // todo: change this - handle error
+    }
+  }
+  get loading() {
+    return this._loading;
+  }
 }

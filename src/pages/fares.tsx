@@ -1,4 +1,4 @@
-import {Stack, Typography, Box, Accordion, AccordionDetails, AccordionSummary} from "@mui/material";
+import {Stack, Typography, Box,} from "@mui/material";
 import {observer} from "mobx-react-lite";
 import {useAppStore} from "../main.tsx";
 import Body from "../components/common/body.tsx";
@@ -11,7 +11,9 @@ import TimetableDetailModal from "../components/timetables/timetable_detail_moda
 import DButton from "../components/fields_buttons/dbutton.tsx";
 import InvalidParams from "./invalid_params.tsx";
 import {useEffect} from "react";
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import {datePickerSlotProps, } from "../theme.tsx";
+
+
 
 const Fares = observer(() => {
   const appStore = useAppStore();
@@ -48,35 +50,29 @@ const Fares = observer(() => {
                   gap: '5px'
                 }}>
               <Typography variant={'h4'}>{t('availableFares')}</Typography>
-              {/* todo something nicer than this accordion - maybe two buttons that allow choosing the time (that open the pickers instead of the standard buttons) */}
-              <Accordion variant={'outlined'} sx={{'&.Mui-expanded': {margin: '0px'}, '&.MuiAccordion-root': {borderColor: 'secondary.main'}}}>
-                <AccordionSummary >
-                  <Stack direction={'row'} alignItems={'center'} >
-                    <ArrowDropDownIcon />
-                  <Stack width={'100%'} alignItems={'flex-end'}>
-                      <Typography component='span'>{store.t('departureTime')}: <Typography component={'span'} sx={{fontWeight: 'bold'}}>{store.timeFrom?.format(store.t('dateTimeFormat'))}</Typography></Typography>
-                      <Typography component={'span'}>{store.t('departureTimeTo')}: <Typography component='span' sx={{fontWeight: 'bold'}}>{store.timeTo?.format(store.t('dateTimeFormat'))}</Typography></Typography>
-                  </Stack>
-                  </Stack>
-                </AccordionSummary>
-                <AccordionDetails sx={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
-                  <MobileDateTimePicker localeText={{
-                    toolbarTitle: store.t('selectDateTime'),
-                    cancelButtonLabel: store.t('cancelButton'),
-                    nextStepButtonLabel: store.t('nextButton'),
-                  }} value={store.timeFrom} onChange={(e) => store.setTimeFrom(e)} format={t('dateTimeFormat')}
-                                        label={t('departureTime')}
-                  />
-                  <MobileDateTimePicker localeText={{
-                    toolbarTitle: store.t('selectDateTime'),
-                    cancelButtonLabel: store.t('cancelButton'),
-                    nextStepButtonLabel: store.t('nextButton'),
-                  }} value={store.timeTo} onChange={(e) => store.setTimeTo(e)} format={t('dateTimeFormat')}
-                                        label={t('departureTimeTo')}
-                  />
-                </AccordionDetails>
-              </Accordion>
+              <Stack direction={'row'} gap={'5px'} marginTop={'10px'}>
 
+                <MobileDateTimePicker localeText={{
+                  toolbarTitle: store.t('selectDateTime'),
+                  cancelButtonLabel: store.t('cancelButton'),
+                  nextStepButtonLabel: store.t('nextButton'),
+                }} value={store.timeFrom} onChange={(e) => store.setTimeFrom(e)} format={t('dateTimeFormat')}
+                                      label={t('departureTime')}
+                                      slotProps={datePickerSlotProps}
+                                      sx={{maxWidth: '137px', 'div.MuiPickersInputBase-root': {padding: '0 14px 0 5px'}, 'div.MuiInputAdornment-root': {marginLeft: '4px'},
+                                      'button.MuiIconButton-root': {padding: '4px'}}}
+                />
+                <MobileDateTimePicker localeText={{
+                  toolbarTitle: store.t('selectDateTime'),
+                  cancelButtonLabel: store.t('cancelButton'),
+                  nextStepButtonLabel: store.t('nextButton'),
+                }} value={store.timeTo} onChange={(e) => store.setTimeTo(e)} format={t('dateTimeFormat')}
+                                      label={t('departureTimeTo')}
+                                      slotProps={datePickerSlotProps}
+                                      sx={{maxWidth: '137px', 'div.MuiPickersInputBase-root': {padding: '0 14px 0 5px'}, 'div.MuiInputAdornment-root': {marginLeft: '4px'},
+                                        'button.MuiIconButton-root': {padding: '4px'}}}
+                />
+              </Stack>
               {store.loading ? <Typography sx={{
                     display: 'flex',
                     flexDirection: 'column',
