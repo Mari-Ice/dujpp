@@ -7,7 +7,7 @@ export class ApiDujpp {
   private baseUrl: string;
 
   constructor(baseUrl?: string) {
-    this.baseUrl = baseUrl ?? 'http://localhost:8000/api/v1/';
+    this.baseUrl = baseUrl ?? '/api/';
   }
 
   private httpGet(endpoint: string): Promise<any> {
@@ -74,7 +74,7 @@ export class ApiDujpp {
   }
 
   async createPaymentIntent(routeId: string, adults: number, children06: number, children714: number, baggage: number) {
-    return (await this.httpPost('create-payment-intent', {routeId, adults, children06, children714, baggage})) as PaymentIntentResponse;
+    return await this.httpPost('create-payment-intent', {routeId, adults, children06, children714, baggage}) as PaymentIntentResponse; // todo: this needs refinement
   }
 }
 

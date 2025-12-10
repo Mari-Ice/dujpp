@@ -19,9 +19,9 @@ configure({
 })
 export const stripePromise = loadStripe(STRIPE_API_KEY);
 
-const baseURL = window.location.hostname;
+export const baseURL = window.location.hostname;
 const apiBaseUrl = window.location.hostname.includes('localhost') ?
-    (LOCAL ? 'http://localhost:8000/' : 'http://10.32.25.198:8000/') : `https://${baseURL}/api/v1/`;
+    (LOCAL ? 'http://localhost:8000/' : 'http://10.32.25.198:8000/') : `/api/`;
 
 export const appStore = new AppStore(apiBaseUrl);
 console.log(apiBaseUrl);

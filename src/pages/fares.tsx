@@ -11,8 +11,7 @@ import TimetableDetailModal from "../components/timetables/timetable_detail_moda
 import DButton from "../components/fields_buttons/dbutton.tsx";
 import InvalidParams from "./invalid_params.tsx";
 import {useEffect} from "react";
-import {datePickerSlotProps, } from "../theme.tsx";
-
+import {datePickerSlotProps,} from "../theme.tsx";
 
 
 const Fares = observer(() => {
@@ -23,6 +22,16 @@ const Fares = observer(() => {
   const store = appStore.faresStore;
 
   const [searchParams] = useSearchParams();
+
+  const updateSearchParams = (key: string, value: string | undefined) => {
+    const currentURL = new URL(window.location.href);
+    if (value) {
+      currentURL.searchParams.set(key, value);
+    } else {
+      currentURL.searchParams.delete(key);
+    }
+    window.history.pushState({}, '', currentURL);
+  }
   useEffect(() => {
     store?.setupParams(searchParams);
   }, [searchParams]);
@@ -56,21 +65,37 @@ const Fares = observer(() => {
                   toolbarTitle: store.t('selectDateTime'),
                   cancelButtonLabel: store.t('cancelButton'),
                   nextStepButtonLabel: store.t('nextButton'),
-                }} value={store.timeFrom} onChange={(e) => store.setTimeFrom(e)} format={t('dateTimeFormat')}
+                }} value={store.timeFrom} onChange={(e) => {
+                  store.setTimeFrom(e);
+                  updateSearchParams('timeFrom', e?.toISOString());
+                }} format={t('dateTimeFormat')}
                                       label={t('departureTime')}
                                       slotProps={datePickerSlotProps}
-                                      sx={{maxWidth: '137px', 'div.MuiPickersInputBase-root': {padding: '0 14px 0 5px'}, 'div.MuiInputAdornment-root': {marginLeft: '4px'},
-                                      'button.MuiIconButton-root': {padding: '4px'}}}
+                                      sx={{
+                                        maxWidth: '137px',
+                                        'div.MuiPickersInputBase-root': {padding: '0 14px 0 5px'},
+                                        'div.MuiInputAdornment-root': {marginLeft: '4px'},
+                                        'button.MuiIconButton-root': {padding: '4px'}
+                                      }}
+                  maxDate={store.timeTo ?? undefined}
                 />
                 <MobileDateTimePicker localeText={{
                   toolbarTitle: store.t('selectDateTime'),
                   cancelButtonLabel: store.t('cancelButton'),
                   nextStepButtonLabel: store.t('nextButton'),
-                }} value={store.timeTo} onChange={(e) => store.setTimeTo(e)} format={t('dateTimeFormat')}
+                }} value={store.timeTo} onChange={(e) => {
+                  store.setTimeTo(e);
+                  updateSearchParams('timeTo', e?.toISOString());
+                }} format={t('dateTimeFormat')}
                                       label={t('departureTimeTo')}
                                       slotProps={datePickerSlotProps}
-                                      sx={{maxWidth: '137px', 'div.MuiPickersInputBase-root': {padding: '0 14px 0 5px'}, 'div.MuiInputAdornment-root': {marginLeft: '4px'},
-                                        'button.MuiIconButton-root': {padding: '4px'}}}
+                                      sx={{
+                                        maxWidth: '137px',
+                                        'div.MuiPickersInputBase-root': {padding: '0 14px 0 5px'},
+                                        'div.MuiInputAdornment-root': {marginLeft: '4px'},
+                                        'button.MuiIconButton-root': {padding: '4px'}
+                                      }}
+                  minDate={store.timeFrom ?? undefined}
                 />
               </Stack>
               {store.loading ? <Typography sx={{

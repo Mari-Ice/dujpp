@@ -1,33 +1,28 @@
 import Body from "../common/body.tsx";
 import {useEffect, useState} from "react";
-import {useStripe} from "@stripe/react-stripe-js";
+import {useAppStore} from "../../main.tsx";
+import {Typography} from "@mui/material";
+import Ticket from "../../pages/ticket.tsx";
 
 const PaymentComplete = () => {
   const [status, setStatus] = useState<string | null>(null);
   const [intentId, setIntentId] = useState<string | null>(null);
-  const stripe = useStripe();
+  const store = useAppStore();
 
   useEffect(() => {
-    if(!stripe) return;
 
-    const clientSecret = new URLSearchParams(window.location.search).get(
-        "payment_intent_client_secret"
-    );
+    const searchParams = new URLSearchParams(window.location.search);
+    setStatus(searchParams.get("redirect_status"));
+    setIntentId(searchParams.get("payment_intent"));
+    const clientSecret = new URLSearchParams(window.location.search).get("payment_intent_client_secret");
     if (!clientSecret) return;
-
-    stripe.retrievePaymentIntent(clientSecret).then(({paymentIntent}) => {
-      if (!paymentIntent) return;
-
-      setStatus(paymentIntent.status);
-      setIntentId(paymentIntent.id);
-    });
-
-  }, [stripe]);
+  }, []);
 
   return (
       <Body>
-        STATUS: {status}
-
+        <Typography variant={'h1'} textAlign={'center'}>{store.t('payment')} {store.t(status ?? 'unsuccessful')}</Typography>
+        {status === 'succeeded' ?
+        <Ticket /> : <Typography textAlign={'center'} fontSize={'50px'}>❌</Typography>}
       </Body>
   );
 };

@@ -4,7 +4,6 @@ import {FaresStore} from "./fares_store.ts";
 import {LocationStore} from "./location_store.ts";
 import {PaymentStore} from "./payment_store.ts";
 import {ApiDujpp} from "../api/api_dujpp.ts";
-import {DEBUG_PAYMENT} from "../globals.ts";
 
 export class AppStore {
   dialog?: any;
@@ -16,17 +15,13 @@ export class AppStore {
   locationStore?: LocationStore;
   paymentStore?: PaymentStore;
   api?: ApiDujpp;
-  // _clientSecret?: string;
 
   constructor(apiBaseUrl?: string) {
     makeAutoObservable(this);
     this.api = new ApiDujpp(apiBaseUrl);
     this.locationStore = new LocationStore(this.t, this.api);
     this.faresStore = new FaresStore(this.t, this.api, this);
-    if (DEBUG_PAYMENT) {
-      this.makePaymentStore();
-    }
-    // this.initializeStripeSecret();
+    this.makePaymentStore();
   }
 
   makePaymentStore() {
@@ -63,8 +58,13 @@ export class AppStore {
     return 'sl';
   };
 
-  t = (key: TranslationKey) => {
-    return translations[this.language][key] as string;
+  t = (key: TranslationKey | string) => {
+    if (!(key in translations[this.language])) {
+      return key;
+    } else {
+      // @ts-ignore
+      return translations[this.language][key] as string;
+    }
   }
 
   setLanguage = (lang: string) => {
@@ -97,13 +97,5 @@ export class AppStore {
   get navigateBack() {
     return this._navigateBack;
   }
-  //
-  // async initializeStripeSecret() {
-  //   this._clientSecret = await fetch('/api/create-checkout-session', {method: 'POST'}).then(res => res.json()).then(data => data.clientSecret);
-  // }
-  //
-  // get clientSecret() {
-  //   return this._clientSecret;
-  // }
 
 }

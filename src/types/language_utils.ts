@@ -53,6 +53,9 @@ export const translations = {
     paid: 'Paid',
     processing: 'Processing...',
     noOptions: 'No options found.',
+    succeeded: 'succeeded',
+    payment: 'Payment',
+    unsuccessful: 'was unsuccessful'
   },
   'sl': {
     appName: 'Dujpp',
@@ -106,6 +109,9 @@ export const translations = {
     paid: 'Plačano',
     processing: 'V obdelavi ...',
     noOptions: 'Ni najdenih možnosti.',
+    succeeded: 'je bilo uspešno',
+    payment: 'Plačilo',
+    unsuccessful: 'ni bilo uspešno'
   },
 
 };

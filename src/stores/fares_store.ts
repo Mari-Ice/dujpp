@@ -41,7 +41,7 @@ export class FaresStore {
     if (timeTo) {
       this._timeTo = dayjs(timeTo);
     } else {
-      this._timeTo = this._timeFrom ? (this._timeFrom as dayjs.Dayjs).add(2, 'hour') : undefined;
+      this._timeTo = this._timeFrom ? (this._timeFrom as dayjs.Dayjs).add(1, 'day').startOf('day') : undefined;
     }
     this._startStationId = searchParams.get(ParamKeys.START_STATION) ?? undefined;
     this._endStationId = searchParams.get(ParamKeys.END_STATION) ?? undefined;

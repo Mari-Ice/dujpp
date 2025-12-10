@@ -3,6 +3,8 @@ import {makeAutoObservable} from "mobx";
 import {ParamKeys} from "../types/route_utils.tsx";
 import {type Trip} from "../types/stations.ts";
 import type {ApiDujpp} from "../api/api_dujpp.ts";
+import type {Stripe, StripeElements} from "@stripe/stripe-js";
+import {baseURL} from "../main.tsx";
 
 export class PaymentStore {
   t: (key: TranslationKey) => string;
@@ -21,6 +23,8 @@ export class PaymentStore {
   _paymentStarted: boolean = false;
   _clientSecret?: string;
   _loading = false;
+  _card_error?: string;
+  _payment_error?: string;
   api: ApiDujpp;
 
   constructor(t: (key: TranslationKey) => string, api: ApiDujpp) {
@@ -85,7 +89,6 @@ export class PaymentStore {
   }
 
   get paymentSuccessful() {
-    this._paymentId = '123456789';
     return this._paymentSuccessful && this._paymentStarted;
   }
 
@@ -97,7 +100,9 @@ export class PaymentStore {
     this._paymentStarted = true;
     this.api.createPaymentIntent(this._routeId ?? '', this.adults, this.children06, this.children714, this.baggage).then(paymentIntent => {
       this._clientSecret = paymentIntent.clientSecret;
+      this._paymentId = 'MOCK_PAYMENT_ID' // todo: this is currently placeholder, we need to get the real payment id from the server - for passing to the redirect url
     })
+
   }
 
   get paymentStarted() {
@@ -108,18 +113,37 @@ export class PaymentStore {
     return this._clientSecret;
   }
 
-  async handleSubmitPayment(stripe: any, elements: any) {
-    if (!stripe || !elements) return;
+  async handleSubmitPayment(stripe: Stripe, elements: StripeElements) {
+    if (!stripe || !elements || !this._clientSecret) return;
+    this._loading = true;
+    this._card_error = undefined;
+    this._payment_error = undefined;
 
     const {error} = await stripe.confirmPayment({
       elements,
-      confirmParams: {return_url: `http://localhost:5173/payment-completed`}
+      confirmParams: {
+        return_url: `${baseURL}/payment-completed/${this._paymentId}`,
+      },
+      redirect: 'always',
     });
+    this._loading = false;
     if (error) {
-      alert(error.message); // todo: change this - handle error
+      if (error.type === 'card_error' || error.type === 'validation_error' || error.type === 'invalid_request_error' || error.type==='authentication_error') {
+        this._card_error = error.message;
+      } else {
+        this._payment_error = error.message;
+        console.log('PAYMENT ERROR: ', error.message, error.type);
+      }
+    } else {
+      this._paymentSuccessful = true;
     }
   }
   get loading() {
     return this._loading;
+  }
+  get paymentError() {
+    if (this._card_error) return this._card_error;
+    if (this._payment_error) return 'Payment issue on our side. Please try again later.';
+    return undefined;
   }
 }

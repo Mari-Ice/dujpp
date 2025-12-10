@@ -3,11 +3,9 @@ import {Stack, Typography} from "@mui/material";
 import {stripePromise, useAppStore} from "../main.tsx";
 import {AppRoutes, buildRoute, ParamKeys} from "../types/route_utils.tsx";
 import {useNavigate, useSearchParams} from "react-router-dom";
-import InvalidParams from "./invalid_params.tsx";
 import {observer} from "mobx-react-lite";
 import NumericalIncrement from "../components/fields_buttons/numerical_increment.tsx";
 import DButton from "../components/fields_buttons/dbutton.tsx";
-import Ticket from "./ticket.tsx";
 import {useEffect} from "react";
 import {StripePayment} from "../components/payment/stripe_payment.tsx";
 import {Elements} from "@stripe/react-stripe-js";
@@ -35,21 +33,17 @@ const PaymentPage = observer(() => {
   if (appStore.navigateBack && !DEBUG_PAYMENT) {
     navigate(buildRoute(AppRoutes.HOME, undefined, {[ParamKeys.LANGUAGE]: appStore.language,}));
   }
-  console.log('rebuilding payment page')
-  console.log(store.paymentSuccessful, store.paymentStarted, store.validParams, store.clientSecret)
 
   useEffect(
-      () => {
-
-      }
+      () => {}
   , [store.clientSecret])
   return (
       <Body>
         <Stack sx={{padding: '20px', justifyContent: 'space-between', height: 'calc(100% - 30px)'}}>
-          {!store.paymentSuccessful ? !store.clientSecret ?
+          {!store.clientSecret ?
                       <Stack alignItems={'start'} padding={'20px'} gap={'20px'} height={'100%'}>
                         <Typography variant={'h2'}>{t('paymentPageTitle')}</Typography>
-                        {/*{!store.runDetail ? <CircularProgress /> : <Summary runDetail={store.runDetail} startStop={store.startStation} endStop={store.endStation}/>}*/}
+                        {/*todo: summary here*/}
                         <NumericalIncrement value={store.adults} onChange={(v) => store.setAdults(v)} label={t('adults')}/>
                         <NumericalIncrement value={store.children714} onChange={(v) => store.setChildren714(v)}
                                             label={t('children714')}/>
@@ -76,11 +70,8 @@ const PaymentPage = observer(() => {
 
                         }
                       }}>
-                        <StripePayment onSuccess={() => {
-                        }} onError={() => {
-                        }}/>
+                        <StripePayment />
                       </Elements>
-                  : <Ticket/>
           }
           <DButton label={t('travelingElsewhere')} sx={{marginTop: '10px'}}
                    onClick={() => navigate(buildRoute(AppRoutes.HOME, undefined, {[ParamKeys.LANGUAGE]: appStore.language}))}/>

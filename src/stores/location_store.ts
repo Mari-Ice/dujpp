@@ -35,8 +35,7 @@ export class LocationStore {
     this.t = t;
     this._date = dayjs();
     this.api = api;
-    this.refreshStations('start');
-    this.refreshStations('stop');
+    this.refreshStations('both');
   }
 
   get mockStations() {
@@ -66,21 +65,15 @@ export class LocationStore {
   }
 
   get departureStations(): Station[] {
-    // if (this._departureStations.length === 0) {
-    //   this.refreshStations('start', this._departureFilters);
-    // }
     return this._departureStations ?? [];
   }
 
 
   get arrivalStations(): Station[] {
-    // if (this._arrivalStations.length === 0) {
-    //   this.refreshStations('stop', this._arrivalFilters);
-    // }
     return this._arrivalStations ?? [];
   }
 
-  refreshStations(departure_arrival: 'start' | 'stop', filters?: GetStationsFilters) {
+  refreshStations(departure_arrival: 'start' | 'stop' | 'both', filters?: GetStationsFilters) {
     this.api.getStations(filters).then((stations: Station[]) => {
       if (!stations || stations.length === 0) {
         stations = [];
@@ -89,29 +82,24 @@ export class LocationStore {
         if (filters && filters.stationId) {
           // we need to filter the current _departureStations over the ids provided in the new data
           const ids = stations.map(station => station.id);
-          // console.log('filtering departure stations', ids.length);
           this._departureStations = this._allStations.filter(station => ids.includes(station.id));
         } else {
           this._departureStations = stations;
         }
-        // console.log('departure stations', this._departureStations.length);
-      } else {
-        if (filters && filters.stationId) {
-          // we need to filter the current _arrivalStations over the ids provided in the new data
-          const ids = stations.map(station => station.id);
-          // console.log('filtering arrival stations', ids.length);
-          // console.log('all stations include those: ', ids.filter(id => this._allStations.map(s => s.id).includes(id)).length);
 
+      } else if (departure_arrival === 'stop') {
+        if (filters && filters.stationId) {
+          const ids = stations.map(station => station.id);
           this._arrivalStations = this._allStations.filter(station => ids.includes(station.id));
         } else {
           this._arrivalStations = stations;
         }
-        // console.log('arrival stations', this._arrivalStations.length);
+      } else {
+        this._departureStations = stations;
+        this._arrivalStations = stations;
       }
-
       if (!filters || !filters.stationId) {
         this._allStations = stations;
-        // console.log('all stations include those: ', stations.length);
       }
     })
 
@@ -162,22 +150,14 @@ export class LocationStore {
     }
     if (!station) {
       this._arrivalFilters = {};
-      if (!this._startStation) {
-        this.refreshStations('start');
-      }
     } else {
       this._arrivalFilters = {stationId: station.id};
-      this.refreshStations('start', this._arrivalFilters);
     }
     this.getPolyline();
   }
 
   get endStation (){
     return this._endStation;
-  }
-
-  stationChosen(station: Station) {
-    return (!!this._startStation && this.isEqualStations(station, this.startStation!)) || (!!this._endStation && this.isEqualStations(station, this.endStation!));
   }
 
   isEqualStations(s1?: Station, s2?: Station) {
@@ -317,7 +297,8 @@ export class LocationStore {
       this._polyline = null;
       return;
     }
-    const trips =  await this.api.getTrips(this._startStation.id, this._endStation.id, this._date);
+    const todayMidnight = dayjs(this._date?.toDate()).add(1, 'day').startOf('day');
+    const trips =  await this.api.getTrips(this._startStation.id, this._endStation.id, this._date, todayMidnight);
     if (trips.length === 0) {
       this._polyline = null;
       return;

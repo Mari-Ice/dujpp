@@ -15,7 +15,7 @@ import Body from "../components/common/body.tsx";
 import {AppRoutes, buildRoute, ParamKeys} from "../types/route_utils.tsx";
 import {datePickerSlotProps, DujppColors} from "../theme.tsx";
 import MyLocationRoundedIcon from '@mui/icons-material/MyLocationRounded';
-import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
+// import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 
 const ChooseTimetablePage = observer(() => {
   const appStore = useAppStore();
@@ -170,18 +170,18 @@ const ChooseTimetablePage = observer(() => {
                     }}
                 ><MyLocationRoundedIcon />
                 </IconButton>
-                <IconButton
-                    onClick={() => {store.getStationsNearMapCenter()}}
-                    aria-label="back"
-                    sx={{
-                      backgroundColor: 'primary.main',
-                      color: 'primary.contrastText',
-                      '&:hover': {backgroundColor: DujppColors.primary + 'BB'},
-                      '&:focus': {backgroundColor: DujppColors.primary},
-                      margin: '10px',
-                    }}
-                ><AutorenewRoundedIcon />
-                </IconButton>
+                {/*<IconButton*/}
+                {/*    onClick={() => {store.getStationsNearMapCenter()}}*/}
+                {/*    aria-label="back"*/}
+                {/*    sx={{*/}
+                {/*      backgroundColor: 'primary.main',*/}
+                {/*      color: 'primary.contrastText',*/}
+                {/*      '&:hover': {backgroundColor: DujppColors.primary + 'BB'},*/}
+                {/*      '&:focus': {backgroundColor: DujppColors.primary},*/}
+                {/*      margin: '10px',*/}
+                {/*    }}*/}
+                {/*><AutorenewRoundedIcon />*/}
+                {/*</IconButton>*/}
               </Stack>
               <Button
                   aria-label="back"

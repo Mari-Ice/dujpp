@@ -16,6 +16,7 @@ import {AppStore} from "./stores/app_store.ts";
 import PaymentComplete from "./components/payment/payment_complete.tsx";
 
 
+
 function App() {
   const store = useAppStore();
   const {search} = useLocation();
@@ -39,7 +40,7 @@ function App() {
           <Route path={'/fares'} element={<Fares/>}/>
           <Route path={'/payment'} element={<PaymentPage/>}/>
           <Route path={'/ticket'} element={<Ticket/>}/>
-          <Route path={'/payment-completed'} element={<PaymentComplete/>}/>
+          <Route path={'/payment-completed/:id'} element={<PaymentComplete/>}/>
         </Routes>
       </div>
     </MultiProvider>
